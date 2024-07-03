@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77c91b9b1a5d524982cebab00a62805, type: 3}
+  m_Name: Wood Log
+  m_EditorClassIdentifier: 
+  itemID: 1
+  itemName: Wood Log
+  icon: {fileID: -1271298388, guid: 5b79e69817bbdbb47b33cbd5276dab16, type: 3}
+  isStackable: 1
+  maxStackSize: 99
+  count: 1
