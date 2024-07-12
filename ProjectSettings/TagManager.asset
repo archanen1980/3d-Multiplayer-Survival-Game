@@ -6,6 +6,7 @@ TagManager:
   tags:
   - InventoryUI
   - UICamera
+  - EquipmentUI
   layers:
   - Default
   - TransparentFX
