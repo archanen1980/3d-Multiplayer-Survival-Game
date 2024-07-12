@@ -31,6 +31,7 @@ public class FirstPersonController : NetworkBehaviour
     Transform playerCameraTransform;
     private Vector2 lookInput;
     float xRotation;
+    private bool isMouseLookEnabled = true;
 
     private Rigidbody rb;
     private CapsuleCollider capsuleCollider;
@@ -190,6 +191,7 @@ public class FirstPersonController : NetworkBehaviour
 
     private void Update()
     {
+        if (!isMouseLookEnabled) return;
         // Mouse look
         float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
         float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
@@ -199,5 +201,10 @@ public class FirstPersonController : NetworkBehaviour
 
         playerCameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
+    }
+
+    public void SetMouseLookEnabled(bool enabled)
+    {
+        isMouseLookEnabled = enabled;
     }
 }

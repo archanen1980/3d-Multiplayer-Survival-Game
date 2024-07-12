@@ -13,6 +13,8 @@ public class InventoryUI : MonoBehaviour
     private Inventory inventory;
     private InventorySlot[] slots;
     private PlayerInputActions playerInputActions;
+    private FirstPersonController playerController; // Reference to the player controller
+    private bool isInventoryOpen = false;
 
     private void Awake()
     {
@@ -21,6 +23,7 @@ public class InventoryUI : MonoBehaviour
         // Dynamically locate the inventoryUI GameObject
         itemsParent = GameObject.FindGameObjectWithTag("InventoryUI").transform;
         inventoryUI = GameObject.FindGameObjectWithTag("InventoryUI");
+        playerController = FindObjectOfType<FirstPersonController>();
 
         if (itemsParent == null)
         {
@@ -30,6 +33,11 @@ public class InventoryUI : MonoBehaviour
         if (inventoryUI == null)
         {
             Debug.LogError("InventoryUI GameObject not found in the scene. Please make sure it is named correctly.");
+        }
+
+        if (playerController == null)
+        {
+            Debug.LogError("PlayerController not found in the scene. Please make sure it is present.");
         }
     }
 
@@ -56,8 +64,23 @@ public class InventoryUI : MonoBehaviour
 
     void OnToggleInventory(InputAction.CallbackContext context)
     {
-        inventoryUI.SetActive(!inventoryUI.activeSelf);
+        isInventoryOpen = !isInventoryOpen;
+        inventoryUI.SetActive(isInventoryOpen);
         UpdateUI();
+
+        if (isInventoryOpen)
+        {
+            Cursor.lockState = CursorLockMode.None; // Unlock the cursor
+            Cursor.visible = true; // Show the cursor
+            playerController.SetMouseLookEnabled(false); // Disable mouse look
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked; // Lock the cursor
+            Cursor.visible = false; // Hide the cursor
+            playerController.SetMouseLookEnabled(true); // Enable mouse look
+        }
+
     }
 
     private void InitializeUI()

@@ -1,19 +1,14 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class DraggableItem : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-    private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
-    private Canvas canvas;
-    private Transform originalParent;
+    private InventorySlot parentSlot;
 
     private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-        canvas = GetComponentInParent<Canvas>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -26,13 +21,15 @@ public class DraggableItem : MonoBehaviour, IPointerDownHandler, IBeginDragHandl
         Debug.Log("OnBeginDrag");
         canvasGroup.alpha = 0.6f; // Make the item semi-transparent
         canvasGroup.blocksRaycasts = false; // Allow the item to be dragged through other UI elements
-        originalParent = transform.parent;
-        transform.SetParent(canvas.transform); // Move the item to the top of the canvas hierarchy
+
+        // Set the dragged item data
+        parentSlot = GetComponentInParent<InventorySlot>();
+        DraggedItem.Instance.SetDraggedItem(parentSlot.GetItem(), parentSlot.GetItemCount());
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor; // Move the item with the cursor
+        // The DraggedItem singleton will handle the visual update
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -40,6 +37,24 @@ public class DraggableItem : MonoBehaviour, IPointerDownHandler, IBeginDragHandl
         Debug.Log("OnEndDrag");
         canvasGroup.alpha = 1f; // Make the item fully opaque again
         canvasGroup.blocksRaycasts = true; // Block raycasts again
-        transform.SetParent(originalParent); // Move the item back to its original parent
+
+        // Check if the item was dropped in a valid slot
+        if (eventData.pointerEnter != null)
+        {
+            InventorySlot newSlot = eventData.pointerEnter.GetComponentInParent<InventorySlot>();
+            if (newSlot != null && newSlot != parentSlot)
+            {
+                newSlot.AddItem(parentSlot.GetItem(), parentSlot.GetItemCount());
+                parentSlot.ClearSlot();
+            }
+        }
+
+        // Clear the dragged item data
+        if (DraggedItem.Instance != null)
+        {
+            DraggedItem.Instance.ClearDraggedItem();
+        }
+
+        transform.SetParent(parentSlot.transform); // Move the item back to its original parent
     }
 }

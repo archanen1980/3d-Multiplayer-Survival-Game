@@ -1,19 +1,23 @@
-using System.Collections;
+using PlayFab;
+using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 
 public class Inventory : MonoBehaviour
 {
     public ItemDatabase itemDatabase;
     public List<InventoryItem> items = new List<InventoryItem>();
     public int maxInventorySize = 16;
+    public bool developerMode = true; // Toggle developer mode here
 
     private void Start()
     {
         Debug.Log("Inventory Start Called");
         InitializeInventory();
-        LoadInventory();
+        if (!developerMode)
+        {
+            LoadInventory();
+        }
     }
 
     private void InitializeInventory()
@@ -87,6 +91,12 @@ public class Inventory : MonoBehaviour
 
     public void SaveInventory()
     {
+        if (developerMode)
+        {
+            Debug.Log("Developer mode enabled, not saving to PlayFab.");
+            return;
+        }
+
         Debug.Log("Saving inventory");
         InventoryData data = new InventoryData();
         foreach (InventoryItem item in items)
@@ -104,19 +114,40 @@ public class Inventory : MonoBehaviour
         }
 
         string json = JsonUtility.ToJson(data);
-        File.WriteAllText(Application.persistentDataPath + "/inventory.json", json);
-        Debug.Log("Inventory saved to: " + Application.persistentDataPath + "/inventory.json");
+        var request = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { "Inventory", json }
+            }
+        };
+        PlayFabClientAPI.UpdateUserData(request, OnDataSend, OnError);
+    }
+
+    private void OnDataSend(UpdateUserDataResult result)
+    {
+        Debug.Log("Inventory data successfully saved to PlayFab!");
     }
 
     public void LoadInventory()
     {
-        Debug.Log("Loading inventory");
-        string path = Application.persistentDataPath + "/inventory.json";
-        if (File.Exists(path))
+        if (developerMode)
         {
-            string json = File.ReadAllText(path);
+            Debug.Log("Developer mode enabled, not loading from PlayFab.");
+            return;
+        }
+
+        Debug.Log("Loading inventory");
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), OnDataReceived, OnError);
+    }
+
+    private void OnDataReceived(GetUserDataResult result)
+    {
+        if (result.Data != null && result.Data.ContainsKey("Inventory"))
+        {
+            string json = result.Data["Inventory"].Value;
             InventoryData data = JsonUtility.FromJson<InventoryData>(json);
-            Debug.Log("Inventory loaded from: " + path);
+            Debug.Log("Inventory data successfully loaded from PlayFab!");
 
             // Ensure the inventory list can accommodate the number of items being loaded
             if (data.itemIDs.Count > items.Count)
@@ -148,20 +179,36 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No inventory file found at: " + path);
+            Debug.LogWarning("No inventory data found in PlayFab.");
         }
+    }
+
+    private void OnError(PlayFabError error)
+    {
+        Debug.LogError("Error: " + error.GenerateErrorReport());
     }
 
     public InventoryItem GetItemByID(int id)
     {
-        // You need to implement a way to find and return an InventoryItem by its ID.
-        // This might involve searching through a list of predefined items or creating a lookup method.
-        // For now, let's assume you have a method or a way to get the item by ID.
-        // For example:
-        return Resources.Load<InventoryItem>($"Items/Item_{id}");
+        return itemDatabase.GetItemByID(id);
     }
 
-    // Additional methods for managing inventory (i.e. using items)
+    // Developer Mode Commands
+    private void Update()
+    {
+        DeveloperModeUsage();
+    }
 
+    private void DeveloperModeUsage()
+    {
+        if (developerMode)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                AddItem(1, 1); // Example: Add 1 items with ID 1
+                Debug.Log("Added 10 items with ID 1");
+            }
+            // Add more cheat commands as needed
+        }
+    }
 }
-
