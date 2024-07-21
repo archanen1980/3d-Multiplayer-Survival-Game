@@ -1,19 +1,50 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemDatabase", menuName = "Inventory/ItemDatabase")]
+[CreateAssetMenu(fileName = "NewItemDatabase", menuName = "Inventory/ItemDatabase")]
 public class ItemDatabase : ScriptableObject
 {
-    public InventoryItem[] items;
+    public List<InventoryItem> itemList = new List<InventoryItem>();
+
+    private Dictionary<int, InventoryItem> itemDictionary = new Dictionary<int, InventoryItem>();
+
+    private void OnEnable()
+    {
+        InitializeDatabase();
+    }
+
+    private void InitializeDatabase()
+    {
+        itemDictionary.Clear();
+        foreach (var item in itemList)
+        {
+            if (!itemDictionary.ContainsKey(item.itemID))
+            {
+                itemDictionary.Add(item.itemID, item);
+            }
+            else
+            {
+                Debug.LogWarning($"Item ID {item.itemID} is already in the database. Skipping {item.itemName}.");
+            }
+        }
+    }
 
     public InventoryItem GetItemByID(int id)
     {
-        foreach (InventoryItem item in items)
+        itemDictionary.TryGetValue(id, out var item);
+        return item;
+    }
+
+    public void AddItem(InventoryItem item)
+    {
+        if (!itemDictionary.ContainsKey(item.itemID))
         {
-            if (item.itemID == id)
-            {
-                return item;
-            }
+            itemList.Add(item);
+            itemDictionary.Add(item.itemID, item);
         }
-        return null;
+        else
+        {
+            Debug.LogWarning($"Item ID {item.itemID} is already in the database. Skipping {item.itemName}.");
+        }
     }
 }

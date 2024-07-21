@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DraggedItem : MonoBehaviour
 {
     public static DraggedItem Instance;
 
     public Image icon;
+    public TextMeshProUGUI itemAmount; // Reference to the Text component
     private InventoryItem item;
     private int count;
 
@@ -16,6 +18,7 @@ public class DraggedItem : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             icon = GetComponentInChildren<Image>(); // Get the child Image component
+            itemAmount = icon.GetComponentInChildren<TextMeshProUGUI>(); // Get the child Text component
         }
         else
         {
@@ -29,6 +32,8 @@ public class DraggedItem : MonoBehaviour
         count = newCount;
         icon.sprite = item.icon;
         icon.enabled = true;
+        itemAmount.text = count.ToString(); // Set the text for item count
+        itemAmount.enabled = true;
         icon.gameObject.SetActive(true);
     }
 
@@ -38,6 +43,8 @@ public class DraggedItem : MonoBehaviour
         count = 0;
         icon.sprite = null;
         icon.enabled = false;
+        itemAmount.text = null; // Clear the text
+        itemAmount.enabled = false;
         icon.gameObject.SetActive(false);
     }
 

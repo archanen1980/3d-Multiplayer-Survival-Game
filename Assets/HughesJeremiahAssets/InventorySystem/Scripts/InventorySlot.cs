@@ -4,70 +4,70 @@ using TMPro;
 
 public class InventorySlot : MonoBehaviour
 {
-    public Image icon; // Reference to the icon Image component
-    public TextMeshProUGUI itemAmount; // Reference to the TextMeshProUGUI component for the item count
-    public Image amountBG;
-    private InventoryItem item;
-    private int count;
+    public Image icon; // UI icon for the item
+    public TextMeshProUGUI itemAmount; // UI text for item count
+    private InventoryItem item; // The item in this slot
+    private int itemCount; // The count of the item in this slot
 
     private void Start()
     {
-        // Ensure the icon and text are invisible initially
-        icon.enabled = false;
-        itemAmount.enabled = false;
-        amountBG.enabled = false;
+        ClearSlot();
     }
 
-    public void AddItem(InventoryItem newItem, int newCount)
+    public bool AddItem(InventoryItem newItem, int newCount)
     {
-        item = newItem;
-        count = newCount;
-        icon.sprite = item.icon;
-        icon.enabled = true;
-
-        if (item.isStackable)
+        if (item == null)
         {
-            itemAmount.text = count.ToString();
-            itemAmount.enabled = true;
-            amountBG.enabled = true;
+            item = newItem;
+            itemCount = newCount;
+            icon.sprite = item.icon;
+            icon.enabled = true;
 
+            UpdateItemAmountText();
+
+            // Make the icon draggable
+            if (icon.gameObject.GetComponent<DraggableItem>() == null)
+            {
+                icon.gameObject.AddComponent<DraggableItem>();
+            }
+
+            return true;
         }
-        else
+        else if (item.itemID == newItem.itemID && item.isStackable)
         {
-            itemAmount.enabled = false;
-            amountBG.enabled = false;
+            itemCount = newCount;
+            item.count = itemCount; // Ensure the item count is updated correctly
+            UpdateItemAmountText();
+            return true;
         }
 
-        // Make the icon draggable
-        if (icon.gameObject.GetComponent<DraggableItem>() == null)
-        {
-            icon.gameObject.AddComponent<DraggableItem>();
-        }
+        return false;
     }
 
     public void ClearSlot()
     {
         item = null;
-        count = 0;
+        itemCount = 0;
         icon.sprite = null;
         icon.enabled = false;
         itemAmount.text = null;
         itemAmount.enabled = false;
-        amountBG.enabled = false;
+    }
 
-        // Remove the DraggableItem component if it exists
-        DraggableItem draggableItem = icon.GetComponent<DraggableItem>();
-        if (draggableItem != null)
+    private void UpdateItemAmountText()
+    {
+        if (item != null && item.isStackable && itemCount > 1)
         {
-            Destroy(draggableItem);
+            itemAmount.text = itemCount.ToString();
+            itemAmount.enabled = true;
+        }
+        else
+        {
+            itemAmount.text = "";
+            itemAmount.enabled = false;
         }
     }
 
     public InventoryItem GetItem() => item;
-    public int GetItemCount() => count;
-
-    public void OnRemoveButton()
-    {
-        // Implement remove item functionality if needed
-    }
+    public int GetItemCount() => itemCount;
 }

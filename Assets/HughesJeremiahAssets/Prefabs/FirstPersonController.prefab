@@ -59,6 +59,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -162,9 +164,6 @@ GameObject:
   - component: {fileID: 1645482434152221680}
   - component: {fileID: 8721174573104029700}
   - component: {fileID: 3566024090849198341}
-  - component: {fileID: 2999969508305011913}
-  - component: {fileID: 5726731600752858443}
-  - component: {fileID: 6858164974555569446}
   m_Layer: 0
   m_Name: FirstPersonController
   m_TagString: Untagged
@@ -215,6 +214,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -346,47 +347,47 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 7b519b19-9eb9-4e0f-9dfd-7f68adbe5db4
-    m_ActionName: Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow,/1532-244/stick]
+    m_ActionName: 'Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow,/1532-244/stick]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: d2b5ef94-e39e-4261-8464-71a72cbba9ae
-    m_ActionName: Player/Look[/Mouse/delta]
+    m_ActionName: 'Player/Look[/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: fb3fb3b0-bfa7-4bc3-a4a1-ec4a193e9f3a
-    m_ActionName: Player/Fire[/Mouse/leftButton,/1532-244/trigger]
+    m_ActionName: 'Player/Fire[/Mouse/leftButton,/1532-244/trigger]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 81bb82a9-7e68-484d-9dc0-720c08ecf481
-    m_ActionName: UI/Navigate[/1532-244/stick/up,/1532-244/stick/down,/1532-244/stick/left,/1532-244/stick/right,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: 'UI/Navigate[/1532-244/stick/up,/1532-244/stick/down,/1532-244/stick/left,/1532-244/stick/right,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 4574d1de-da69-4b6e-a751-07148515790b
-    m_ActionName: UI/Submit[/Keyboard/enter]
+    m_ActionName: 'UI/Submit[/Keyboard/enter]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 09e2fa8e-99ef-499c-be36-b0f224d2fa72
-    m_ActionName: UI/Cancel[/Keyboard/escape]
+    m_ActionName: 'UI/Cancel[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: a700930e-9ce0-469c-904c-1ae9644fa303
-    m_ActionName: UI/Point[/Mouse/position]
+    m_ActionName: 'UI/Point[/Mouse/position]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 4cd39307-d100-4d9e-b827-b9047f01af26
-    m_ActionName: UI/Click[/Mouse/leftButton]
+    m_ActionName: 'UI/Click[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 9e60681e-b011-45ef-9b99-f8b825d8c4ed
-    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
+    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 34b38b67-f67e-4f36-a3f7-0ae28c119157
-    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
+    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: c468f187-9504-4328-84e1-7f545b2877a2
-    m_ActionName: UI/RightClick[/Mouse/rightButton]
+    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 8cb56599-b02b-4412-b9b7-0f8d6ceea8bb
@@ -451,53 +452,6 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &2999969508305011913
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6721795564953588213}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5e5fade3c54e3545a525b6dbc6fc322, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemDatabase: {fileID: 11400000, guid: 8dbe2ea4b41b41240a701d160624e828, type: 2}
-  items: []
-  maxInventorySize: 16
-  developerMode: 1
---- !u!114 &5726731600752858443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6721795564953588213}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9e9294e160c14f4b8fa09ff31da9c14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemsParent: {fileID: 0}
-  inventoryUI: {fileID: 0}
---- !u!114 &6858164974555569446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6721795564953588213}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0739a189ced9354e8316e3b2148d9e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventory: {fileID: 2999969508305011913}
-  inventoryUI: {fileID: 5726731600752858443}
-  itemToPickup: {fileID: 11400000, guid: b07160ddc7213144b9920fccf8578612, type: 2}
-  itemID: 1
-  itemCount: 1
 --- !u!1 &9153791466195324556
 GameObject:
   m_ObjectHideFlags: 0
