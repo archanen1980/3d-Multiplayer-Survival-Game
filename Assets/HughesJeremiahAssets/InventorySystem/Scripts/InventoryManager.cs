@@ -27,26 +27,36 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public void AddItemToBackpack(int itemID, int count)
+    public void AddItemToInventory(int itemID, int count)
     {
-        Debug.Log("AddItemToBackpack called with itemID: " + itemID + ", count: " + count);
+        Debug.Log("AddItemToInventory called with itemID: " + itemID + ", count: " + count);
         if (itemDatabase == null)
         {
             Debug.LogError("ItemDatabase is not assigned.");
             return;
         }
 
-        if (containers.Count == 0 || containers[0] == null)
-        {
-            Debug.LogError("Backpack is not assigned.");
-            return;
-        }
-
         InventoryItem item = itemDatabase.GetItemByID(itemID);
         if (item != null)
         {
-            containers[0].AddItem(item, count); // Add to the first container in the list
-            Debug.Log($"Added {count} of {item.itemName} to the backpack.");
+            int remainingCount = count;
+            foreach (var container in containers)
+            {
+                if (remainingCount <= 0)
+                {
+                    break;
+                }
+                remainingCount = container.AddItem(item, remainingCount);
+            }
+
+            if (remainingCount > 0)
+            {
+                Debug.LogWarning($"Not enough space to add {remainingCount} of {item.itemName} to the inventory.");
+            }
+            else
+            {
+                Debug.Log($"Added {count} of {item.itemName} to the inventory.");
+            }
             inventoryUI.UpdateUI(); // Update the UI
         }
         else
@@ -54,6 +64,4 @@ public class InventoryManager : MonoBehaviour
             Debug.LogWarning($"Item with ID {itemID} not found in the database.");
         }
     }
-
-    // Similar methods for other containers (pants, jacket, belt)
 }

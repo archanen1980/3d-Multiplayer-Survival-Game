@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
+using System.Collections.Generic; // If using TextMeshPro for UI elements
 
 public class AddItemTest : MonoBehaviour
 {
@@ -67,7 +67,7 @@ public class AddItemTest : MonoBehaviour
 
         if (selectedItem != null)
         {
-            inventoryManager.AddItemToBackpack(selectedItem.itemID, itemCount);
+            inventoryManager.AddItemToInventory(selectedItem.itemID, itemCount);
             Debug.Log($"Added {itemCount} of {selectedItem.itemName} to the inventory.");
         }
         else
