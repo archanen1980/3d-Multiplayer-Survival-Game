@@ -5,10 +5,7 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance; // Singleton instance of the InventoryManager
     public ItemDatabase itemDatabase;
-    public ItemContainer backpack;
-    public ItemContainer pants;
-    public ItemContainer jacket;
-    public ItemContainer pouch;
+    public List<ItemContainer> containers = new List<ItemContainer>();
 
     public InventoryUI inventoryUI; // Reference to the InventoryUI script
 
@@ -24,10 +21,10 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        if (backpack != null) backpack.InitializeContainer();
-        if (pants != null) pants.InitializeContainer();
-        if (jacket != null) jacket.InitializeContainer();
-        if (pouch != null) pouch.InitializeContainer();
+        foreach (var container in containers)
+        {
+            container.InitializeContainer();
+        }
     }
 
     public void AddItemToBackpack(int itemID, int count)
@@ -39,7 +36,7 @@ public class InventoryManager : MonoBehaviour
             return;
         }
 
-        if (backpack == null)
+        if (containers.Count == 0 || containers[0] == null)
         {
             Debug.LogError("Backpack is not assigned.");
             return;
@@ -48,7 +45,7 @@ public class InventoryManager : MonoBehaviour
         InventoryItem item = itemDatabase.GetItemByID(itemID);
         if (item != null)
         {
-            backpack.AddItem(item, count);
+            containers[0].AddItem(item, count); // Add to the first container in the list
             Debug.Log($"Added {count} of {item.itemName} to the backpack.");
             inventoryUI.UpdateUI(); // Update the UI
         }
@@ -58,5 +55,5 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // Similar methods for other containers (pants, jacket, pouch)
+    // Similar methods for other containers (pants, jacket, belt)
 }

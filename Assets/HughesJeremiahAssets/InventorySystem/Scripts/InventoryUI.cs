@@ -1,20 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class InventoryUI : MonoBehaviour
 {
     public GameObject slotPrefab; // Prefab for an inventory slot
 
     // Parent objects for different containers
-    public GameObject backpackContainerParent;
-    public GameObject jacketContainerParent;
-    public GameObject pantsContainerParent;
-    public GameObject pouchContainerParent;
-
-    public Transform backpackSlotsParent;
-    public Transform jacketSlotsParent;
-    public Transform pantsSlotsParent;
-    public Transform pouchSlotsParent;
+    public List<Transform> slotParents = new List<Transform>();
 
     public GameObject inventoryUI; // The Inventory UI
 
@@ -49,10 +42,10 @@ public class InventoryUI : MonoBehaviour
 
     private void CreateAllSlots()
     {
-        CreateSlots(inventoryManager.backpack, backpackSlotsParent);
-        CreateSlots(inventoryManager.pants, pantsSlotsParent);
-        CreateSlots(inventoryManager.jacket, jacketSlotsParent);
-        CreateSlots(inventoryManager.pouch, pouchSlotsParent);
+        for (int i = 0; i < inventoryManager.containers.Count; i++)
+        {
+            CreateSlots(inventoryManager.containers[i], slotParents[i]);
+        }
     }
 
     private void CreateSlots(ItemContainer container, Transform parent)
@@ -72,16 +65,11 @@ public class InventoryUI : MonoBehaviour
 
     public void UpdateUI()
     {
-        // Update container visibility based on slot count
-        backpackContainerParent.SetActive(inventoryManager.backpack.slotCount > 0);
-        pantsContainerParent.SetActive(inventoryManager.pants.slotCount > 0);
-        jacketContainerParent.SetActive(inventoryManager.jacket.slotCount > 0);
-        pouchContainerParent.SetActive(inventoryManager.pouch.slotCount > 0);
-
-        UpdateContainerSlots(inventoryManager.backpack, backpackSlotsParent);
-        UpdateContainerSlots(inventoryManager.pants, pantsSlotsParent);
-        UpdateContainerSlots(inventoryManager.jacket, jacketSlotsParent);
-        UpdateContainerSlots(inventoryManager.pouch, pouchSlotsParent);
+        for (int i = 0; i < inventoryManager.containers.Count; i++)
+        {
+            inventoryManager.containers[i].gameObject.SetActive(inventoryManager.containers[i].slotCount > 0);
+            UpdateContainerSlots(inventoryManager.containers[i], slotParents[i]);
+        }
     }
 
     private void UpdateContainerSlots(ItemContainer container, Transform parent)
@@ -98,6 +86,11 @@ public class InventoryUI : MonoBehaviour
                 slots[i].ClearSlot();
             }
         }
+    }
+
+    public void RefreshUI()
+    {
+        UpdateUI();
     }
 
     private void OnToggleInventory(InputAction.CallbackContext context)

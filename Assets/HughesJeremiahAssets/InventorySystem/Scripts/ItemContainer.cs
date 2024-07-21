@@ -40,4 +40,51 @@ public class ItemContainer : MonoBehaviour
         Debug.LogWarning("No available slot to add the item.");
         return remainingCount; // Return the remaining count if there was not enough space
     }
+
+    public void MoveItem(int fromIndex, int toIndex)
+    {
+        if (fromIndex < 0 || fromIndex >= items.Count || toIndex < 0 || toIndex >= items.Count)
+        {
+            Debug.LogWarning("Invalid slot index.");
+            return;
+        }
+
+        InventoryItem itemToMove = items[fromIndex];
+        items[fromIndex] = items[toIndex];
+        items[toIndex] = itemToMove;
+    }
+
+    public void TransferItem(int fromIndex, int toIndex, ItemContainer targetContainer)
+    {
+        if (fromIndex < 0 || fromIndex >= items.Count || toIndex < 0 || toIndex >= targetContainer.items.Count)
+        {
+            Debug.LogWarning("Invalid slot index.");
+            return;
+        }
+
+        InventoryItem itemToTransfer = items[fromIndex];
+        if (itemToTransfer == null)
+        {
+            return;
+        }
+
+        InventoryItem targetItem = targetContainer.items[toIndex];
+        if (targetItem == null)
+        {
+            targetContainer.items[toIndex] = itemToTransfer;
+            items[fromIndex] = null;
+        }
+        else if (targetItem.itemID == itemToTransfer.itemID && targetItem.isStackable)
+        {
+            int spaceLeft = targetItem.maxStackSize - targetItem.count;
+            int itemsToAdd = Mathf.Min(spaceLeft, itemToTransfer.count);
+            targetItem.count += itemsToAdd;
+            itemToTransfer.count -= itemsToAdd;
+
+            if (itemToTransfer.count <= 0)
+            {
+                items[fromIndex] = null;
+            }
+        }
+    }
 }

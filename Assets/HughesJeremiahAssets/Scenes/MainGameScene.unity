@@ -2471,14 +2471,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 119850510213367289, guid: 843ebe55e50135a468e294e6aed0245c,
     type: 3}
-  backpackContainerParent: {fileID: 490913594}
-  jacketContainerParent: {fileID: 435631338}
-  pantsContainerParent: {fileID: 2001167971}
-  pouchContainerParent: {fileID: 587264420}
-  backpackSlotsParent: {fileID: 959178257980833374}
-  jacketSlotsParent: {fileID: 959178257980833372}
-  pantsSlotsParent: {fileID: 959178257980833370}
-  pouchSlotsParent: {fileID: 959178257980833368}
+  containerParents:
+  - {fileID: 490913594}
+  - {fileID: 435631338}
+  - {fileID: 2001167971}
+  - {fileID: 587264420}
+  slotParents:
+  - {fileID: 959178257980833374}
+  - {fileID: 959178257980833372}
+  - {fileID: 959178257980833370}
+  - {fileID: 959178257980833368}
   inventoryUI: {fileID: 276863438}
 --- !u!114 &1839080815
 MonoBehaviour:
@@ -2493,10 +2495,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemDatabase: {fileID: 11400000, guid: 39d4b18e5f8a1be438052fc005a90ebd, type: 2}
-  backpack: {fileID: 959178257980833375}
-  pants: {fileID: 959178257980833371}
-  jacket: {fileID: 959178257980833373}
-  pouch: {fileID: 959178257980833369}
+  containers:
+  - {fileID: 959178257980833375}
+  - {fileID: 959178257980833373}
+  - {fileID: 959178257980833371}
+  - {fileID: 959178257980833369}
   inventoryUI: {fileID: 1839080814}
 --- !u!1 &1957822139
 GameObject:
@@ -3260,6 +3263,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 744fa8fb6de1aaa4f8d85837f74ad9df,
         type: 2}
+    - target: {fileID: 1832217826784551146, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: m_Name
+      value: ContainerBelt
+      objectReference: {fileID: 0}
     - target: {fileID: 1912970954081157728, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3565,10 +3573,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: InventoryPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 6323627028102096897, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6670508228613337131, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: m_Name
       value: JacketslotsParent
+      objectReference: {fileID: 0}
+    - target: {fileID: 6972009966000182507, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7731726314102455069, guid: a13183477468bca4993de79babedb66f,
         type: 3}

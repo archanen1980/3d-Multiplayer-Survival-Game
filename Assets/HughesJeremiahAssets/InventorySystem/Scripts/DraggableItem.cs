@@ -39,14 +39,24 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         InventorySlot newSlot = eventData.pointerEnter?.GetComponentInParent<InventorySlot>();
         if (newSlot != null && newSlot != originalSlot)
         {
-            InventoryItem draggedItem = originalSlot.GetItem();
-            int draggedItemCount = originalSlot.GetItemCount();
+            ItemContainer originalContainer = originalSlot.GetComponentInParent<ItemContainer>();
+            ItemContainer newContainer = newSlot.GetComponentInParent<ItemContainer>();
 
-            if (newSlot.AddItem(draggedItem, draggedItemCount))
+            if (newContainer != null && originalContainer != newContainer)
             {
-                originalSlot.ClearSlot();
+                int fromIndex = originalSlot.transform.GetSiblingIndex();
+                int toIndex = newSlot.transform.GetSiblingIndex();
+                originalContainer.TransferItem(fromIndex, toIndex, newContainer);
             }
+            else if (newContainer == originalContainer)
+            {
+                int fromIndex = originalSlot.transform.GetSiblingIndex();
+                int toIndex = newSlot.transform.GetSiblingIndex();
+                originalContainer.MoveItem(fromIndex, toIndex);
+            }
+            originalSlot.ClearSlot();
         }
         DraggedItem.Instance.ClearDraggedItem();
+        InventoryManager.instance.inventoryUI.RefreshUI(); // Refresh the UI
     }
 }
