@@ -4,87 +4,58 @@ using UnityEngine;
 public class ItemContainer : MonoBehaviour
 {
     public int slotCount; // Number of slots in the container
-    public List<InventoryItem> items = new List<InventoryItem>();
+    public List<InventorySlot> slots = new List<InventorySlot>();
 
     public void InitializeContainer()
     {
-        items = new List<InventoryItem>(new InventoryItem[slotCount]);
+        slots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
+
+        if (slots.Count != slotCount)
+        {
+            Debug.LogWarning("Slot count mismatch. Check the number of InventorySlot components in the container.");
+        }
+
+        foreach (var slot in slots)
+        {
+            slot.ClearSlot();
+        }
     }
 
     public int AddItem(InventoryItem newItem, int count)
     {
         int remainingCount = count;
-        for (int i = 0; i < items.Count; i++)
-        {
-            if (items[i] == null)
-            {
-                InventoryItem newItemInstance = Instantiate(newItem);
-                newItemInstance.count = remainingCount;
-                items[i] = newItemInstance;
-                return 0; // All items were added
-            }
-            else if (items[i].itemID == newItem.itemID && items[i].isStackable)
-            {
-                int spaceLeft = newItem.maxStackSize - items[i].count;
-                int itemsToAdd = Mathf.Min(spaceLeft, remainingCount);
-                items[i].count += itemsToAdd;
-                remainingCount -= itemsToAdd;
 
-                if (remainingCount <= 0)
+        // First, try to add to existing stacks
+        foreach (var slot in slots)
+        {
+            if (slot.GetItem() != null && slot.GetItem().itemID == newItem.itemID && newItem.isStackable)
+            {
+                int spaceLeft = newItem.maxStackSize - slot.GetItemCount();
+                if (spaceLeft > 0)
                 {
-                    return 0; // All items were added
+                    int itemsToAdd = Mathf.Min(spaceLeft, remainingCount);
+                    slot.AddItem(newItem, slot.GetItemCount() + itemsToAdd);
+                    remainingCount -= itemsToAdd;
+
+                    if (remainingCount <= 0)
+                    {
+                        return 0; // All items were added
+                    }
                 }
+            }
+        }
+
+        // If there are still items remaining, add them to empty slots
+        foreach (var slot in slots)
+        {
+            if (slot.GetItem() == null)
+            {
+                slot.AddItem(newItem, remainingCount);
+                return 0; // All items were added
             }
         }
 
         Debug.LogWarning("No available slot to add the item.");
         return remainingCount; // Return the remaining count if there was not enough space
-    }
-
-    public void MoveItem(int fromIndex, int toIndex)
-    {
-        if (fromIndex < 0 || fromIndex >= items.Count || toIndex < 0 || toIndex >= items.Count)
-        {
-            Debug.LogWarning("Invalid slot index.");
-            return;
-        }
-
-        InventoryItem itemToMove = items[fromIndex];
-        items[fromIndex] = items[toIndex];
-        items[toIndex] = itemToMove;
-    }
-
-    public void TransferItem(int fromIndex, int toIndex, ItemContainer targetContainer)
-    {
-        if (fromIndex < 0 || fromIndex >= items.Count || toIndex < 0 || toIndex >= targetContainer.items.Count)
-        {
-            Debug.LogWarning("Invalid slot index.");
-            return;
-        }
-
-        InventoryItem itemToTransfer = items[fromIndex];
-        if (itemToTransfer == null)
-        {
-            return;
-        }
-
-        InventoryItem targetItem = targetContainer.items[toIndex];
-        if (targetItem == null)
-        {
-            targetContainer.items[toIndex] = itemToTransfer;
-            items[fromIndex] = null;
-        }
-        else if (targetItem.itemID == itemToTransfer.itemID && targetItem.isStackable)
-        {
-            int spaceLeft = targetItem.maxStackSize - targetItem.count;
-            int itemsToAdd = Mathf.Min(spaceLeft, itemToTransfer.count);
-            targetItem.count += itemsToAdd;
-            itemToTransfer.count -= itemsToAdd;
-
-            if (itemToTransfer.count <= 0)
-            {
-                items[fromIndex] = null;
-            }
-        }
     }
 }

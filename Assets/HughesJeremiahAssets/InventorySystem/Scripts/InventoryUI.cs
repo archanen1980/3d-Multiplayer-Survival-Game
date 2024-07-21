@@ -61,6 +61,8 @@ public class InventoryUI : MonoBehaviour
         {
             Instantiate(slotPrefab, parent);
         }
+
+        container.InitializeContainer(); // Initialize container with the created slots
     }
 
     public void UpdateUI()
@@ -77,9 +79,9 @@ public class InventoryUI : MonoBehaviour
         InventorySlot[] slots = parent.GetComponentsInChildren<InventorySlot>();
         for (int i = 0; i < slots.Length; i++)
         {
-            if (i < container.items.Count && container.items[i] != null)
+            if (i < container.slots.Count && container.slots[i].GetItem() != null)
             {
-                slots[i].AddItem(container.items[i], container.items[i].count);
+                slots[i].AddItem(container.slots[i].GetItem(), container.slots[i].GetItemCount());
             }
             else
             {

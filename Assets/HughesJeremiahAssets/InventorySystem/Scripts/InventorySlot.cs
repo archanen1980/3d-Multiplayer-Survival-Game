@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
-public class InventorySlot : MonoBehaviour
+public class InventorySlot : MonoBehaviour, IPointerClickHandler
 {
     public Image icon; // UI icon for the item
     public TextMeshProUGUI itemAmount; // UI text for item count
@@ -14,34 +15,20 @@ public class InventorySlot : MonoBehaviour
         ClearSlot();
     }
 
-    public bool AddItem(InventoryItem newItem, int newCount)
+    public void AddItem(InventoryItem newItem, int newCount)
     {
-        if (item == null)
+        item = newItem;
+        itemCount = newCount;
+        icon.sprite = item.icon;
+        icon.enabled = true;
+
+        UpdateItemAmountText();
+
+        // Ensure the DraggableItem component is attached to the icon
+        if (icon.gameObject.GetComponent<DraggableItem>() == null)
         {
-            item = newItem;
-            itemCount = newCount;
-            icon.sprite = item.icon;
-            icon.enabled = true;
-
-            UpdateItemAmountText();
-
-            // Make the icon draggable
-            if (icon.gameObject.GetComponent<DraggableItem>() == null)
-            {
-                icon.gameObject.AddComponent<DraggableItem>();
-            }
-
-            return true;
+            icon.gameObject.AddComponent<DraggableItem>();
         }
-        else if (item.itemID == newItem.itemID && item.isStackable)
-        {
-            itemCount = newCount;
-            item.count = itemCount; // Ensure the item count is updated correctly
-            UpdateItemAmountText();
-            return true;
-        }
-
-        return false;
     }
 
     public void ClearSlot()
@@ -70,4 +57,12 @@ public class InventorySlot : MonoBehaviour
 
     public InventoryItem GetItem() => item;
     public int GetItemCount() => itemCount;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            ContextMenu.Instance.ShowContextMenu(this);
+        }
+    }
 }

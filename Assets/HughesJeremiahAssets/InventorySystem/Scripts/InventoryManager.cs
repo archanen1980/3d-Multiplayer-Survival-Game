@@ -64,4 +64,9 @@ public class InventoryManager : MonoBehaviour
             Debug.LogWarning($"Item with ID {itemID} not found in the database.");
         }
     }
+
+    public void RefreshUI()
+    {
+        inventoryUI.UpdateUI();
+    }
 }
