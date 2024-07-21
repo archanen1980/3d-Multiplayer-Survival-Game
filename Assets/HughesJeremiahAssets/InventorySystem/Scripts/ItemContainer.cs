@@ -23,6 +23,12 @@ public class ItemContainer : MonoBehaviour
 
     public int AddItem(InventoryItem newItem, int count)
     {
+        if (newItem == null)
+        {
+            Debug.LogError("NewItem is null in AddItem in ItemContainer.");
+            return count;
+        }
+
         int remainingCount = count;
 
         // First, try to add to existing stacks
@@ -58,4 +64,5 @@ public class ItemContainer : MonoBehaviour
         Debug.LogWarning("No available slot to add the item.");
         return remainingCount; // Return the remaining count if there was not enough space
     }
+
 }

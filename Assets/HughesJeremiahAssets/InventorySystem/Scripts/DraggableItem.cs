@@ -18,25 +18,25 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        canvasGroup.alpha = 0.6f; // Make the item semi-transparent
-        canvasGroup.blocksRaycasts = false; // Allow the item to be dragged through other UI elements
-        originalParent = transform.parent; // Remember the original parent
+        canvasGroup.alpha = 0.6f;
+        canvasGroup.blocksRaycasts = false;
+        originalParent = transform.parent;
         DraggedItem.Instance.SetDraggedItem(originalSlot.GetItem(), originalSlot.GetItemCount());
-        rectTransform.SetParent(transform.root); // Move the rectTransform to the root to avoid clipping
+        rectTransform.SetParent(transform.root);
         rectTransform.position = Input.mousePosition;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.position = Input.mousePosition; // Move the item along with the mouse
+        rectTransform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        canvasGroup.alpha = 1f; // Make the item fully opaque again
-        canvasGroup.blocksRaycasts = true; // Block raycasts again
-        rectTransform.SetParent(originalParent); // Move the item back to its original parent
-        rectTransform.localPosition = Vector3.zero; // Reset the item's position
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+        rectTransform.SetParent(originalParent);
+        rectTransform.localPosition = Vector3.zero;
 
         InventorySlot newSlot = null;
         if (eventData.pointerEnter != null)
@@ -46,11 +46,50 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         if (newSlot != null && newSlot != originalSlot)
         {
-            newSlot.AddItem(originalSlot.GetItem(), originalSlot.GetItemCount());
+            if (newSlot.GetItem() != null && newSlot.GetItem().itemID == originalSlot.GetItem().itemID && newSlot.GetItemCount() < newSlot.GetItem().maxStackSize)
+            {
+                // Combine stacks
+                int combinedCount = newSlot.GetItemCount() + originalSlot.GetItemCount();
+                int maxStackSize = newSlot.GetItem().maxStackSize;
+
+                if (combinedCount <= maxStackSize)
+                {
+                    Debug.Log("Combining stacks.");
+                    newSlot.AddItem(originalSlot.GetItem(), combinedCount);
+                    originalSlot.ClearSlot();
+                }
+                else
+                {
+                    Debug.Log("Combining stacks with overflow.");
+                    newSlot.AddItem(originalSlot.GetItem(), maxStackSize);
+                    originalSlot.AddItem(originalSlot.GetItem(), combinedCount - maxStackSize);
+                }
+            }
+            else
+            {
+                // Swap items
+                InventoryItem tempItem = newSlot.GetItem();
+                int tempCount = newSlot.GetItemCount();
+
+                if (tempItem != null && tempCount > 0)
+                {
+                    newSlot.AddItem(originalSlot.GetItem(), originalSlot.GetItemCount());
+                    originalSlot.AddItem(tempItem, tempCount);
+                }
+                else
+                {
+                    newSlot.AddItem(originalSlot.GetItem(), originalSlot.GetItemCount());
+                    originalSlot.ClearSlot();
+                }
+            }
+        }
+        else if (InventoryManager.instance.useDragAndDropToDelete && !EventSystem.current.IsPointerOverGameObject())
+        {
+            // Item dropped outside inventory and not over any UI, delete it
             originalSlot.ClearSlot();
         }
 
         DraggedItem.Instance.ClearDraggedItem();
-        InventoryManager.instance.RefreshUI(); // Refresh the UI
+        InventoryManager.instance.RefreshUI();
     }
 }

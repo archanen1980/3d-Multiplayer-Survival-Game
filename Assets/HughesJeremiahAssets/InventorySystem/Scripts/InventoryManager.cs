@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
 {
-    public static InventoryManager instance; // Singleton instance of the InventoryManager
+    public static InventoryManager instance;
     public ItemDatabase itemDatabase;
     public List<ItemContainer> containers = new List<ItemContainer>();
 
-    public InventoryUI inventoryUI; // Reference to the InventoryUI script
+    public InventoryUI inventoryUI;
+    public bool useContextMenuToDelete = true; // Toggle for using the context menu to delete
+    public bool useDragAndDropToDelete = true; // Toggle for using drag and drop to delete
 
     private void Awake()
     {
@@ -57,13 +59,14 @@ public class InventoryManager : MonoBehaviour
             {
                 Debug.Log($"Added {count} of {item.itemName} to the inventory.");
             }
-            inventoryUI.UpdateUI(); // Update the UI
+            inventoryUI.UpdateUI();
         }
         else
         {
             Debug.LogWarning($"Item with ID {itemID} not found in the database.");
         }
     }
+
 
     public void RefreshUI()
     {

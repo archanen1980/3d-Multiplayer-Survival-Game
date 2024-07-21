@@ -5,10 +5,10 @@ using TMPro;
 
 public class InventorySlot : MonoBehaviour, IPointerClickHandler
 {
-    public Image icon; // UI icon for the item
-    public TextMeshProUGUI itemAmount; // UI text for item count
-    private InventoryItem item; // The item in this slot
-    private int itemCount; // The count of the item in this slot
+    public Image icon;
+    public TextMeshProUGUI itemAmount;
+    private InventoryItem item;
+    private int itemCount;
 
     private void Start()
     {
@@ -17,19 +17,32 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public void AddItem(InventoryItem newItem, int newCount)
     {
+        if (newItem == null)
+        {
+            Debug.LogError("NewItem is null in AddItem.");
+            return;
+        }
+
         item = newItem;
         itemCount = newCount;
+
+        if (item.icon == null)
+        {
+            Debug.LogError($"Item icon is null for item: {item.itemName}");
+            return;
+        }
+
         icon.sprite = item.icon;
         icon.enabled = true;
 
         UpdateItemAmountText();
 
-        // Ensure the DraggableItem component is attached to the icon
         if (icon.gameObject.GetComponent<DraggableItem>() == null)
         {
             icon.gameObject.AddComponent<DraggableItem>();
         }
     }
+
 
     public void ClearSlot()
     {
@@ -60,7 +73,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Right)
+        if (eventData.button == PointerEventData.InputButton.Right && InventoryManager.instance.useContextMenuToDelete && item != null)
         {
             ContextMenu.Instance.ShowContextMenu(this);
         }
