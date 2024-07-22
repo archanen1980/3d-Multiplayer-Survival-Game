@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 5
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &7503578
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -171,6 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 2
   icon: {fileID: 0}
+  associatedContainer: {fileID: 959178257980833373}
 --- !u!225 &82815438
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -756,6 +758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 7
   icon: {fileID: 0}
+  associatedContainer: {fileID: 959178257980833375}
 --- !u!225 &418643290
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1421,6 +1424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 1
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &627238764
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1453,6 +1457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 9
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &642070631
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1515,6 +1520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 8
   icon: {fileID: 0}
+  associatedContainer: {fileID: 959178257980833369}
 --- !u!225 &696124643
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1583,6 +1589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 3
   icon: {fileID: 0}
+  associatedContainer: {fileID: 959178257980833371}
 --- !u!225 &718835703
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1893,6 +1900,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 6
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &1009052134
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3865,6 +3873,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 4
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &1730578378
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4108,7 +4117,7 @@ MonoBehaviour:
   - {fileID: 959178257980833369}
   inventoryUI: {fileID: 1839080814}
   useContextMenuToDelete: 1
-  useDragAndDropToDelete: 1
+  useDragandDropToDelete: 1
 --- !u!114 &1839080816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4266,6 +4275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 10
   icon: {fileID: 0}
+  associatedContainer: {fileID: 0}
 --- !u!225 &2004879038
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5210,6 +5220,16 @@ PrefabInstance:
     - target: {fileID: 1547633110873270894, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: slotCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547633110873270894, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: slotParent
+      value: 
+      objectReference: {fileID: 959178257980833374}
+    - target: {fileID: 1547633110873270894, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: minSlotCount
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1547633110873270894, guid: a13183477468bca4993de79babedb66f,
@@ -5286,8 +5306,13 @@ PrefabInstance:
     - target: {fileID: 2199134646731095341, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: slotCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2199134646731095341, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: slotParent
+      value: 
+      objectReference: {fileID: 959178257980833368}
     - target: {fileID: 2199134646731095341, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: containerText
@@ -5301,8 +5326,13 @@ PrefabInstance:
     - target: {fileID: 2731449586065098525, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: slotCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2731449586065098525, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: slotParent
+      value: 
+      objectReference: {fileID: 959178257980833372}
     - target: {fileID: 2731449586065098525, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: containerText
@@ -5746,8 +5776,13 @@ PrefabInstance:
     - target: {fileID: 8976235690819720107, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: slotCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8976235690819720107, guid: a13183477468bca4993de79babedb66f,
+        type: 3}
+      propertyPath: slotParent
+      value: 
+      objectReference: {fileID: 959178257980833370}
     - target: {fileID: 8976235690819720107, guid: a13183477468bca4993de79babedb66f,
         type: 3}
       propertyPath: containerText

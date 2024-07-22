@@ -44,6 +44,8 @@ public class InventoryUI : MonoBehaviour
     {
         for (int i = 0; i < inventoryManager.containers.Count; i++)
         {
+            inventoryManager.containers[i].slotParent = slotParents[i]; // Set the slot parent for each container
+            inventoryManager.containers[i].slotPrefab = slotPrefab; // Set the slot prefab for each container
             CreateSlots(inventoryManager.containers[i], slotParents[i]);
         }
     }
@@ -57,11 +59,13 @@ public class InventoryUI : MonoBehaviour
         }
 
         // Create slots based on the container's slot count
-        for (int i = 0; i < container.slotCount; i++)
+        int initialSlotCount = Mathf.Max(container.CurrentSlotCount, container.minSlotCount);
+        for (int i = 0; i < initialSlotCount; i++)
         {
             Instantiate(slotPrefab, parent);
         }
 
+        container.CurrentSlotCount = initialSlotCount; // Ensure the container's slot count is updated
         container.InitializeContainer(); // Initialize container with the created slots
     }
 
@@ -69,7 +73,7 @@ public class InventoryUI : MonoBehaviour
     {
         for (int i = 0; i < inventoryManager.containers.Count; i++)
         {
-            inventoryManager.containers[i].gameObject.SetActive(inventoryManager.containers[i].slotCount > 0);
+            inventoryManager.containers[i].gameObject.SetActive(inventoryManager.containers[i].CurrentSlotCount > 0);
             UpdateContainerSlots(inventoryManager.containers[i], slotParents[i]);
         }
     }

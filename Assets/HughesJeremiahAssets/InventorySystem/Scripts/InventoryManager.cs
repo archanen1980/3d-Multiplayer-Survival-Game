@@ -67,7 +67,6 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-
     public void RefreshUI()
     {
         inventoryUI.UpdateUI();

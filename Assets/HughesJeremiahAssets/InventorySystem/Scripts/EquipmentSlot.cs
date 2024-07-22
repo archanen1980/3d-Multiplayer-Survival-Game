@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
+public class EquipmentSlot : MonoBehaviour
 {
     public ItemType slotType;  // The type of item this slot can hold
     public Image icon;
     private EquipmentItem currentItem;
+
+    [SerializeField] public ItemContainer associatedContainer; // Reference to the associated ItemContainer
+    private int additionalSlots = 0; // Track additional slots provided by the equipped item
 
     private void Awake()
     {
@@ -30,6 +32,12 @@ public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
             currentItem = item;
             icon.sprite = item.icon;
             icon.enabled = true;
+
+            if (associatedContainer != null)
+            {
+                additionalSlots = item.slotsToAdd;
+                associatedContainer.SetSlots(additionalSlots);
+            }
         }
         else
         {
@@ -44,6 +52,12 @@ public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
 
     public void ClearSlot()
     {
+        if (currentItem != null && associatedContainer != null)
+        {
+            additionalSlots = 0;
+            associatedContainer.SetSlots(additionalSlots);
+        }
+
         currentItem = null;
         icon.sprite = null;
         icon.enabled = false;
@@ -52,15 +66,5 @@ public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
     public bool CanEquipItem(EquipmentItem item)
     {
         return item.itemType == slotType;
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left && currentItem != null)
-        {
-            // Start dragging the item
-            DraggedItem.Instance.SetDraggedItem(currentItem, 1);
-            ClearSlot();
-        }
     }
 }

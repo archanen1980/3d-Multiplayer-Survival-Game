@@ -81,15 +81,22 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (newInventorySlot != null && DraggedItem.Instance.GetItem() is InventoryItem)
         {
             InventoryItem item = DraggedItem.Instance.GetItem();
-            if (originalInventorySlot != null)
+            if (originalEquipmentSlot != null && originalEquipmentSlot.associatedContainer == newInventorySlot.GetComponentInParent<ItemContainer>())
             {
-                newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
-                originalInventorySlot.ClearSlot();
+                Debug.LogWarning("Cannot unequip item to the container it creates slots for.");
             }
-            else if (originalEquipmentSlot != null)
+            else
             {
-                newInventorySlot.AddItem(item, 1);
-                originalEquipmentSlot.ClearSlot();
+                if (originalInventorySlot != null)
+                {
+                    newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
+                    originalInventorySlot.ClearSlot();
+                }
+                else if (originalEquipmentSlot != null)
+                {
+                    newInventorySlot.AddItem(item, 1);
+                    originalEquipmentSlot.ClearSlot();
+                }
             }
         }
         else if (InventoryManager.instance.useDragAndDropToDelete && !EventSystem.current.IsPointerOverGameObject())
