@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 563e23c1715b4454fb41cc8e6126e50f, type: 3}
+  m_Name: BeltPouch
+  m_EditorClassIdentifier: 
+  itemID: 0
+  itemName: New Item
+  icon: {fileID: 0}
+  isStackable: 0
+  maxStackSize: 1
+  itemType: 0
+  count: 1
+  armorModifier: 0
+  damageModifier: 0
+  slotsToAdd: 0
+  movementMultiplier: 0
