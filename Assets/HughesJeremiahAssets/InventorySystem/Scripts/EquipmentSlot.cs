@@ -268,4 +268,30 @@ public class EquipmentSlot : MonoBehaviour
 
         return remainingCount; // Return remaining items if not all could be moved
     }
+
+    public bool CanFitInContainer(InventoryItem item, int count)
+    {
+        int remainingCount = count;
+
+        // Check available space in the container
+        foreach (var slot in associatedContainer.slots)
+        {
+            if (slot.GetItem() == null || (slot.GetItem().itemID == item.itemID && item.isStackable))
+            {
+                int spaceLeft = item.maxStackSize - slot.GetItemCount();
+                if (spaceLeft > 0)
+                {
+                    int itemsToAdd = Mathf.Min(spaceLeft, remainingCount);
+                    remainingCount -= itemsToAdd;
+
+                    if (remainingCount <= 0)
+                    {
+                        return true; // Enough space found
+                    }
+                }
+            }
+        }
+
+        return false; // Not enough space available
+    }
 }

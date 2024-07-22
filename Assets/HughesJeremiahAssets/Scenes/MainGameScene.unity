@@ -4117,7 +4117,7 @@ MonoBehaviour:
   - {fileID: 959178257980833369}
   inventoryUI: {fileID: 1839080814}
   useContextMenuToDelete: 1
-  useDragandDropToDelete: 1
+  useDragAndDropToDelete: 1
 --- !u!114 &1839080816
 MonoBehaviour:
   m_ObjectHideFlags: 0

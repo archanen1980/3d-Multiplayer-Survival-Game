@@ -94,4 +94,17 @@ public class ItemContainer : MonoBehaviour
         // Ensure UI is updated
         InventoryManager.instance.RefreshUI();
     }
+
+    public int GetItemCount()
+    {
+        int itemCount = 0;
+        foreach (var slot in slots)
+        {
+            if (slot.GetItem() != null)
+            {
+                itemCount++;
+            }
+        }
+        return itemCount;
+    }
 }

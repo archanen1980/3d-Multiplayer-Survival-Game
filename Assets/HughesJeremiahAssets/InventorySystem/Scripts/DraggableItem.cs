@@ -83,7 +83,18 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             InventoryItem item = DraggedItem.Instance.GetItem();
             if (originalEquipmentSlot != null && originalEquipmentSlot.associatedContainer == newInventorySlot.GetComponentInParent<ItemContainer>())
             {
-                Debug.LogWarning("Cannot unequip item to the container it creates slots for.");
+                // Check if the container has a minimum slot count, less items than minSlotCount, and if there is space
+                if (originalEquipmentSlot.associatedContainer.minSlotCount > 0 &&
+                    originalEquipmentSlot.associatedContainer.GetItemCount() < originalEquipmentSlot.associatedContainer.minSlotCount &&
+                    originalEquipmentSlot.CanFitInContainer(item, 1))
+                {
+                    newInventorySlot.AddItem(item, 1);
+                    originalEquipmentSlot.ClearSlot();
+                }
+                else
+                {
+                    Debug.LogWarning("Cannot unequip item to the container it creates slots for.");
+                }
             }
             else
             {
