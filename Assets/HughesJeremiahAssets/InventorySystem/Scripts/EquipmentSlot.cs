@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class EquipmentSlot : MonoBehaviour
+public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
 {
     public ItemType slotType;  // The type of item this slot can hold
     public Image icon;
@@ -293,5 +294,13 @@ public class EquipmentSlot : MonoBehaviour
         }
 
         return false; // Not enough space available
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right && InventoryManager.instance.useContextMenuToDelete && currentItem != null)
+        {
+            ContextMenu.Instance.ShowContextMenu(this);
+        }
     }
 }

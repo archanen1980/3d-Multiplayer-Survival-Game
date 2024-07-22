@@ -10,7 +10,8 @@ public class ContextMenu : MonoBehaviour
     private GameObject contextMenu;
     [SerializeField] private Button deleteButton;
     [SerializeField] private Button splitStackButton;
-    private InventorySlot currentSlot;
+    private InventorySlot currentInventorySlot;
+    private EquipmentSlot currentEquipmentSlot;
 
     // References for split stack panel
     [SerializeField] private GameObject splitStackPanel;
@@ -68,18 +69,30 @@ public class ContextMenu : MonoBehaviour
 
     public void ShowContextMenu(InventorySlot slot)
     {
+        currentInventorySlot = slot;
+        currentEquipmentSlot = null;
+        ShowContextMenuCommon(slot.GetItem(), slot.GetItemCount());
+    }
+
+    public void ShowContextMenu(EquipmentSlot slot)
+    {
+        currentInventorySlot = null;
+        currentEquipmentSlot = slot;
+        ShowContextMenuCommon(slot.GetEquippedItem(), 1);
+    }
+
+    private void ShowContextMenuCommon(InventoryItem item, int itemCount)
+    {
         if (contextMenu == null || deleteButton == null || splitStackButton == null)
         {
             Debug.LogError("ContextMenu or buttons are not assigned.");
             return;
         }
 
-        currentSlot = slot;
         contextMenu.SetActive(true);
         contextMenu.transform.position = Input.mousePosition;
 
-        InventoryItem item = slot.GetItem();
-        if (item != null && item.isStackable && slot.GetItemCount() > 1)
+        if (item != null && item.isStackable && itemCount > 1)
         {
             splitStackButton.gameObject.SetActive(true);
         }
@@ -106,7 +119,7 @@ public class ContextMenu : MonoBehaviour
 
     private void ShowSplitStackPanel()
     {
-        if (currentSlot == null)
+        if (currentInventorySlot == null)
         {
             Debug.LogError("Current slot is null.");
             return;
@@ -121,7 +134,7 @@ public class ContextMenu : MonoBehaviour
 
         // Initialize the slider
         splitSlider.minValue = 1;
-        splitSlider.maxValue = currentSlot.GetItemCount() - 1; // Cannot split all items
+        splitSlider.maxValue = currentInventorySlot.GetItemCount() - 1; // Cannot split all items
         splitSlider.value = 1; // Default to splitting one item
 
         UpdateSplitAmountText(splitSlider.value); // Initialize the split amount text
@@ -140,27 +153,29 @@ public class ContextMenu : MonoBehaviour
 
     private void RemoveItem()
     {
-        if (currentSlot == null)
+        if (currentInventorySlot != null)
         {
-            Debug.LogError("Current slot is null.");
-            return;
+            currentInventorySlot.ClearSlot();
+        }
+        else if (currentEquipmentSlot != null)
+        {
+            currentEquipmentSlot.ClearSlot();
         }
 
-        currentSlot.ClearSlot();
         HideContextMenu();
         InventoryManager.instance.RefreshUI();
     }
 
     private void SplitStack(int splitAmount)
     {
-        if (currentSlot == null)
+        if (currentInventorySlot == null)
         {
             Debug.LogError("Current slot is null.");
             return;
         }
 
-        InventoryItem item = currentSlot.GetItem();
-        int itemCount = currentSlot.GetItemCount();
+        InventoryItem item = currentInventorySlot.GetItem();
+        int itemCount = currentInventorySlot.GetItemCount();
 
         if (item == null || !item.isStackable || itemCount <= 1)
         {
@@ -169,12 +184,12 @@ public class ContextMenu : MonoBehaviour
         }
 
         int remainingAmount = itemCount - splitAmount;
-        currentSlot.AddItem(item, remainingAmount);
+        currentInventorySlot.AddItem(item, remainingAmount);
 
         InventoryItem newStack = Instantiate(item);
         newStack.count = splitAmount;
 
-        ItemContainer container = currentSlot.GetComponentInParent<ItemContainer>();
+        ItemContainer container = currentInventorySlot.GetComponentInParent<ItemContainer>();
         if (container == null)
         {
             Debug.LogError("ItemContainer not found.");
