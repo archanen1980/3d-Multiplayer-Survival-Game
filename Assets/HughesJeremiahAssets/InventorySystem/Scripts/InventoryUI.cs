@@ -10,6 +10,7 @@ public class InventoryUI : MonoBehaviour
     public List<Transform> slotParents = new List<Transform>();
 
     public GameObject inventoryUI; // The Inventory UI
+    public EquipmentUI equipmentUI; // Reference to the Equipment UI script
 
     private InventoryManager inventoryManager;
     private PlayerInputActions playerInputActions;
@@ -35,7 +36,6 @@ public class InventoryUI : MonoBehaviour
     {
         inventoryManager = InventoryManager.instance;
         inventoryUI.SetActive(false); // Start with the inventory UI closed
-
         CreateAllSlots(); // Create all slots initially
         UpdateUI(); // Initial UI update
     }
@@ -93,12 +93,14 @@ public class InventoryUI : MonoBehaviour
     public void RefreshUI()
     {
         UpdateUI();
+        equipmentUI.UpdateUI(); // Also update the Equipment UI
     }
 
     private void OnToggleInventory(InputAction.CallbackContext context)
     {
         isInventoryOpen = !isInventoryOpen;
         inventoryUI.SetActive(isInventoryOpen);
+        equipmentUI.ToggleEquipmentUI(isInventoryOpen); // Toggle equipment UI visibility
 
         if (isInventoryOpen)
         {

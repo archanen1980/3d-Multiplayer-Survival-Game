@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum ItemType
 {
-    DefaultItem, Head, Torso, Legs, Feet, Glasses, Face, Back, Belt, MainHand, OffHand, Backpack
+    DefaultItem, Head, Torso, Legs, Feet, Glasses, Face, Back, Belt, MainHand, OffHand
 }
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]

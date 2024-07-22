@@ -43,7 +43,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         }
     }
 
-
     public void ClearSlot()
     {
         item = null;

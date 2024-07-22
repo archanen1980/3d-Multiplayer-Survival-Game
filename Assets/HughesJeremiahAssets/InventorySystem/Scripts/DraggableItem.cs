@@ -1,18 +1,17 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private CanvasGroup canvasGroup;
     private Transform originalParent;
-    private InventorySlot originalSlot;
+    private InventorySlot originalInventorySlot;
+    private EquipmentSlot originalEquipmentSlot;
     private RectTransform rectTransform;
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        originalSlot = GetComponentInParent<InventorySlot>();
         rectTransform = GetComponent<RectTransform>();
     }
 
@@ -21,7 +20,19 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvasGroup.alpha = 0.6f;
         canvasGroup.blocksRaycasts = false;
         originalParent = transform.parent;
-        DraggedItem.Instance.SetDraggedItem(originalSlot.GetItem(), originalSlot.GetItemCount());
+
+        originalInventorySlot = GetComponentInParent<InventorySlot>();
+        originalEquipmentSlot = GetComponentInParent<EquipmentSlot>();
+
+        if (originalInventorySlot != null)
+        {
+            DraggedItem.Instance.SetDraggedItem(originalInventorySlot.GetItem(), originalInventorySlot.GetItemCount());
+        }
+        else if (originalEquipmentSlot != null)
+        {
+            DraggedItem.Instance.SetDraggedItem(originalEquipmentSlot.GetEquippedItem(), 1);
+        }
+
         rectTransform.SetParent(transform.root);
         rectTransform.position = Input.mousePosition;
     }
@@ -38,55 +49,60 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         rectTransform.SetParent(originalParent);
         rectTransform.localPosition = Vector3.zero;
 
-        InventorySlot newSlot = null;
+        EquipmentSlot newEquipmentSlot = null;
+        InventorySlot newInventorySlot = null;
+
         if (eventData.pointerEnter != null)
         {
-            newSlot = eventData.pointerEnter.GetComponentInParent<InventorySlot>();
+            newEquipmentSlot = eventData.pointerEnter.GetComponentInParent<EquipmentSlot>();
+            newInventorySlot = eventData.pointerEnter.GetComponentInParent<InventorySlot>();
         }
 
-        if (newSlot != null && newSlot != originalSlot)
+        if (newEquipmentSlot != null && DraggedItem.Instance.GetItem() is EquipmentItem)
         {
-            if (newSlot.GetItem() != null && newSlot.GetItem().itemID == originalSlot.GetItem().itemID && newSlot.GetItemCount() < newSlot.GetItem().maxStackSize)
+            EquipmentItem item = DraggedItem.Instance.GetItem() as EquipmentItem;
+            if (newEquipmentSlot.CanEquipItem(item))
             {
-                // Combine stacks
-                int combinedCount = newSlot.GetItemCount() + originalSlot.GetItemCount();
-                int maxStackSize = newSlot.GetItem().maxStackSize;
-
-                if (combinedCount <= maxStackSize)
+                newEquipmentSlot.EquipItem(item);
+                if (originalInventorySlot != null)
                 {
-                    Debug.Log("Combining stacks.");
-                    newSlot.AddItem(originalSlot.GetItem(), combinedCount);
-                    originalSlot.ClearSlot();
+                    originalInventorySlot.ClearSlot();
                 }
-                else
+                else if (originalEquipmentSlot != null)
                 {
-                    Debug.Log("Combining stacks with overflow.");
-                    newSlot.AddItem(originalSlot.GetItem(), maxStackSize);
-                    originalSlot.AddItem(originalSlot.GetItem(), combinedCount - maxStackSize);
+                    originalEquipmentSlot.ClearSlot();
                 }
             }
             else
             {
-                // Swap items
-                InventoryItem tempItem = newSlot.GetItem();
-                int tempCount = newSlot.GetItemCount();
-
-                if (tempItem != null && tempCount > 0)
-                {
-                    newSlot.AddItem(originalSlot.GetItem(), originalSlot.GetItemCount());
-                    originalSlot.AddItem(tempItem, tempCount);
-                }
-                else
-                {
-                    newSlot.AddItem(originalSlot.GetItem(), originalSlot.GetItemCount());
-                    originalSlot.ClearSlot();
-                }
+                Debug.LogWarning("Cannot equip item to this slot.");
+            }
+        }
+        else if (newInventorySlot != null && DraggedItem.Instance.GetItem() is InventoryItem)
+        {
+            InventoryItem item = DraggedItem.Instance.GetItem();
+            if (originalInventorySlot != null)
+            {
+                newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
+                originalInventorySlot.ClearSlot();
+            }
+            else if (originalEquipmentSlot != null)
+            {
+                newInventorySlot.AddItem(item, 1);
+                originalEquipmentSlot.ClearSlot();
             }
         }
         else if (InventoryManager.instance.useDragAndDropToDelete && !EventSystem.current.IsPointerOverGameObject())
         {
-            // Item dropped outside inventory and not over any UI, delete it
-            originalSlot.ClearSlot();
+            // Handle deleting items
+            if (originalInventorySlot != null)
+            {
+                originalInventorySlot.ClearSlot();
+            }
+            else if (originalEquipmentSlot != null)
+            {
+                originalEquipmentSlot.ClearSlot();
+            }
         }
 
         DraggedItem.Instance.ClearDraggedItem();
