@@ -7,8 +7,20 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 {
     public Image icon;
     public TextMeshProUGUI itemAmount;
+    public GameObject durabilityBarBackground; // Reference to the durability bar background GameObject
+    private Image durabilityBar; // Reference to the durability bar image
     private InventoryItem item;
     private int itemCount;
+
+    private void Awake()
+    {
+        // Assign the durability bar here to ensure it's set before use
+        if (durabilityBarBackground != null)
+        {
+            durabilityBar = durabilityBarBackground.GetComponentInChildren<Image>();
+            durabilityBarBackground.SetActive(false); // Hide durability bar background initially
+        }
+    }
 
     private void Start()
     {
@@ -36,6 +48,7 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         icon.enabled = true;
 
         UpdateItemAmountText();
+        UpdateDurabilityBar();
 
         if (icon.gameObject.GetComponent<DraggableItem>() == null)
         {
@@ -51,6 +64,12 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         icon.enabled = false;
         itemAmount.text = null;
         itemAmount.enabled = false;
+
+        if (durabilityBarBackground != null && durabilityBarBackground.activeInHierarchy)
+        {
+            durabilityBar.fillAmount = 0; // Reset durability bar
+            durabilityBarBackground.SetActive(false); // Hide durability bar background
+        }
     }
 
     private void UpdateItemAmountText()
@@ -64,6 +83,22 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         {
             itemAmount.text = "";
             itemAmount.enabled = false;
+        }
+    }
+
+    private void UpdateDurabilityBar()
+    {
+        if (durabilityBarBackground != null && durabilityBar != null)
+        {
+            if (item is EquipmentItem equipmentItem && equipmentItem.maxDurability > 0)
+            {
+                durabilityBar.fillAmount = (float)equipmentItem.currentDurability / equipmentItem.maxDurability;
+                durabilityBarBackground.SetActive(true);
+            }
+            else
+            {
+                durabilityBarBackground.SetActive(false);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ public class ItemTooltip : MonoBehaviour
     public TextMeshProUGUI itemNameText;
     public TextMeshProUGUI itemDescriptionText;
     public TextMeshProUGUI itemStatsText;
+    public TextMeshProUGUI itemDurabilityText; // Text to display durability
     public Vector3 offset = new Vector3(10f, 0f, 0f); // Offset for the tooltip position
 
     private void Awake()
@@ -33,8 +34,19 @@ public class ItemTooltip : MonoBehaviour
         gameObject.SetActive(true);
         UpdateTooltipPosition(iconRectTransform);
         itemNameText.text = item.itemName;
+        itemNameText.color = GetColorByRarity(item.rarity); // Set color based on rarity
         itemDescriptionText.text = item.itemDescription;
         itemStatsText.text = GetItemStats(item);
+
+        if (item is EquipmentItem equipmentItem)
+        {
+            itemDurabilityText.text = $"Durability: {equipmentItem.currentDurability}/{equipmentItem.maxDurability}";
+            itemDurabilityText.gameObject.SetActive(true);
+        }
+        else
+        {
+            itemDurabilityText.gameObject.SetActive(false);
+        }
     }
 
     public void HideTooltip()
@@ -80,5 +92,28 @@ public class ItemTooltip : MonoBehaviour
         }
         // Add more stats as needed
         return stats;
+    }
+
+    private Color GetColorByRarity(ItemRarity rarity)
+    {
+        switch (rarity)
+        {
+            case ItemRarity.Common:
+                return Color.white;
+            case ItemRarity.Uncommon:
+                return Color.green;
+            case ItemRarity.Rare:
+                return Color.blue;
+            case ItemRarity.Epic:
+                return Color.magenta;
+            case ItemRarity.Legendary:
+                return new Color(1f, 0.5f, 0f); // Orange color for Legendary
+            case ItemRarity.Mythic:
+                return Color.red;
+            case ItemRarity.Artifact:
+                return new Color(0.5f, 0f, 0.5f); // Purple color for Artifact
+            default:
+                return Color.white;
+        }
     }
 }

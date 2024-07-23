@@ -7,6 +7,8 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 {
     public ItemType slotType;  // The type of item this slot can hold
     public Image icon;
+    public GameObject durabilityBarBackground; // Reference to the durability bar background GameObject
+    private Image durabilityBar; // Reference to the durability bar image
     private EquipmentItem currentItem;
 
     [SerializeField] public ItemContainer associatedContainer; // Reference to the associated ItemContainer
@@ -19,6 +21,12 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (icon == null)
         {
             Debug.LogError("Icon Image not found in EquipmentSlot's children.");
+        }
+
+        if (durabilityBarBackground != null)
+        {
+            durabilityBar = durabilityBarBackground.GetComponentInChildren<Image>();
+            durabilityBarBackground.SetActive(false); // Hide durability bar background initially
         }
     }
 
@@ -34,6 +42,7 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             currentItem = item;
             icon.sprite = item.icon;
             icon.enabled = true;
+            UpdateDurabilityBar();
 
             if (associatedContainer != null)
             {
@@ -44,6 +53,22 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         else
         {
             Debug.LogWarning($"Item {item.itemName} cannot be equipped in {slotType} slot.");
+        }
+    }
+
+    private void UpdateDurabilityBar()
+    {
+        if (durabilityBarBackground != null && durabilityBar != null)
+        {
+            if (currentItem != null && currentItem.maxDurability > 0)
+            {
+                durabilityBar.fillAmount = (float)currentItem.currentDurability / currentItem.maxDurability;
+                durabilityBarBackground.SetActive(true);
+            }
+            else
+            {
+                durabilityBarBackground.SetActive(false);
+            }
         }
     }
 
@@ -112,6 +137,11 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         currentItem = null;
         icon.sprite = null;
         icon.enabled = false;
+        if (durabilityBarBackground != null && durabilityBarBackground.activeInHierarchy)
+        {
+            durabilityBar.fillAmount = 0; // Reset durability bar
+            durabilityBarBackground.SetActive(false); // Hide durability bar background
+        }
     }
 
     private int MoveItemToAvailableContainers(InventoryItem item, int count)
