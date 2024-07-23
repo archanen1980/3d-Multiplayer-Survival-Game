@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
+public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public ItemType slotType;  // The type of item this slot can hold
     public Image icon;
@@ -191,6 +191,19 @@ public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
         }
 
         return false; // Not enough space available
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (currentItem != null)
+        {
+            ItemTooltip.Instance.ShowTooltip(currentItem, icon.rectTransform);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        ItemTooltip.Instance.HideTooltip();
     }
 
     public void OnPointerClick(PointerEventData eventData)

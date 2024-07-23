@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class InventorySlot : MonoBehaviour, IPointerClickHandler
+public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Image icon;
     public TextMeshProUGUI itemAmount;
@@ -69,6 +69,19 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public InventoryItem GetItem() => item;
     public int GetItemCount() => itemCount;
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (item != null)
+        {
+            ItemTooltip.Instance.ShowTooltip(item, icon.rectTransform);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        ItemTooltip.Instance.HideTooltip();
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {
