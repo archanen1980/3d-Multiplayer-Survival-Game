@@ -34,12 +34,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         rectTransform.SetParent(transform.root);
-        rectTransform.position = Input.mousePosition;
+        DraggedItem.Instance.gameObject.SetActive(true);
+        DraggedItem.Instance.icon.transform.position = Input.mousePosition;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        rectTransform.position = Input.mousePosition;
+        DraggedItem.Instance.icon.transform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -64,14 +65,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (newEquipmentSlot.CanEquipItem(item))
             {
                 newEquipmentSlot.EquipItem(item);
-                if (originalInventorySlot != null)
-                {
-                    originalInventorySlot.ClearSlot();
-                }
-                else if (originalEquipmentSlot != null)
-                {
-                    originalEquipmentSlot.ClearSlot();
-                }
+                ClearOriginalSlot();
             }
             else
             {
@@ -100,12 +94,28 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 if (originalInventorySlot != null)
                 {
-                    newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
+                    if (newInventorySlot.GetItem() != null && newInventorySlot.GetItem().itemID == item.itemID && item.isStackable)
+                    {
+                        int newCount = newInventorySlot.GetItemCount() + DraggedItem.Instance.GetCount();
+                        newInventorySlot.AddItem(item, newCount);
+                    }
+                    else
+                    {
+                        newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
+                    }
                     originalInventorySlot.ClearSlot();
                 }
                 else if (originalEquipmentSlot != null)
                 {
-                    newInventorySlot.AddItem(item, 1);
+                    if (newInventorySlot.GetItem() != null && newInventorySlot.GetItem().itemID == item.itemID && item.isStackable)
+                    {
+                        int newCount = newInventorySlot.GetItemCount() + DraggedItem.Instance.GetCount();
+                        newInventorySlot.AddItem(item, newCount);
+                    }
+                    else
+                    {
+                        newInventorySlot.AddItem(item, 1);
+                    }
                     originalEquipmentSlot.ClearSlot();
                 }
             }
@@ -113,17 +123,23 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         else if (InventoryManager.instance.useDragAndDropToDelete && !EventSystem.current.IsPointerOverGameObject())
         {
             // Handle deleting items
-            if (originalInventorySlot != null)
-            {
-                originalInventorySlot.ClearSlot();
-            }
-            else if (originalEquipmentSlot != null)
-            {
-                originalEquipmentSlot.ClearSlot();
-            }
+            ClearOriginalSlot();
         }
 
         DraggedItem.Instance.ClearDraggedItem();
         InventoryManager.instance.RefreshUI();
+        DraggedItem.Instance.gameObject.SetActive(false);
+    }
+
+    private void ClearOriginalSlot()
+    {
+        if (originalInventorySlot != null)
+        {
+            originalInventorySlot.ClearSlot();
+        }
+        else if (originalEquipmentSlot != null)
+        {
+            originalEquipmentSlot.ClearSlot();
+        }
     }
 }

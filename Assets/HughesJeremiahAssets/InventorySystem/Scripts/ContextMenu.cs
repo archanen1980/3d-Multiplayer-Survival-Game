@@ -183,9 +183,13 @@ public class ContextMenu : MonoBehaviour
             return;
         }
 
+        // Calculate the remaining amount in the original stack after the split
         int remainingAmount = itemCount - splitAmount;
+
+        // Update the original slot with the remaining amount
         currentInventorySlot.AddItem(item, remainingAmount);
 
+        // Create a new stack with the split amount
         InventoryItem newStack = Instantiate(item);
         newStack.count = splitAmount;
 
