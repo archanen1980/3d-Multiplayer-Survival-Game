@@ -56,29 +56,54 @@ public class EquipmentSlot : MonoBehaviour, IPointerClickHandler
     {
         if (currentItem != null && associatedContainer != null)
         {
-            if (WillHaveSpaceInContainer(associatedContainer))
+            List<InventorySlot> excessSlots = new List<InventorySlot>();
+
+            // Collect excess slots
+            for (int i = associatedContainer.minSlotCount; i < associatedContainer.slots.Count; i++)
             {
-                MoveItemsWithinContainer(associatedContainer);
-                additionalSlots = 0;
-                associatedContainer.SetSlots(additionalSlots);
+                InventorySlot slot = associatedContainer.slots[i];
+                if (slot.GetItem() != null)
+                {
+                    excessSlots.Add(slot);
+                }
             }
-            else if (CanMoveItemsFromContainer(associatedContainer))
+
+            // Move items from excess slots to minimum slots
+            foreach (var slot in excessSlots)
             {
-                MoveItemsFromContainer(associatedContainer);
-                additionalSlots = 0;
-                associatedContainer.SetSlots(additionalSlots);
+                InventoryItem item = slot.GetItem();
+                int itemCount = slot.GetItemCount();
+                int remainingItems = MoveItemToMinSlotsWithinContainer(associatedContainer, item, itemCount);
+
+                if (remainingItems > 0)
+                {
+                    slot.AddItem(item, remainingItems); // Keep remaining items in the slot if they couldn't be moved
+                }
+                else
+                {
+                    slot.ClearSlot(); // Clear the slot if all items were moved
+                }
             }
-            else
+
+            // Now clear any remaining excess slots
+            foreach (var slot in excessSlots)
             {
-                Debug.LogWarning("Not enough space to unequip item.");
-                return; // Prevent unequipping the item if there's not enough space
+                if (slot.GetItem() != null)
+                {
+                    slot.ClearSlot();
+                }
             }
+
+            additionalSlots = 0;
+            associatedContainer.SetSlots(additionalSlots);
         }
 
         currentItem = null;
         icon.sprite = null;
         icon.enabled = false;
     }
+
+
 
     public bool CanEquipItem(EquipmentItem item)
     {
