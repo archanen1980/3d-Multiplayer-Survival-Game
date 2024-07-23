@@ -8,6 +8,7 @@ public class EquipmentUI : MonoBehaviour
     public GameObject equipmentUI; // The Equipment UI
     public EquipmentSlot[] equipmentSlots; // Array to hold references to equipment slots
     public TextMeshProUGUI weightText; // Text field to display current and max weight
+    public TextMeshProUGUI currencyText; // Text field to display the current currency
 
     public float maxWeight = 100f; // Maximum weight capacity
 
@@ -51,6 +52,10 @@ public class EquipmentUI : MonoBehaviour
     public void UpdateUI()
     {
         UpdateWeight(); // Update weight whenever the UI is updated
+        if (InventoryManager.instance.useCurrency)
+        {
+            UpdateCurrencyUI(InventoryManager.instance.currentCurrency);
+        }
     }
 
     public void UpdateWeight()
@@ -71,6 +76,23 @@ public class EquipmentUI : MonoBehaviour
         else
         {
             weightText.color = Color.white; // Reset to default color if within max weight
+        }
+    }
+
+    public void UpdateCurrencyUI(int amount)
+    {
+        if (currencyText != null)
+        {
+            currencyText.text = $"Currency: {amount}";
+            currencyText.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideCurrencyUI()
+    {
+        if (currencyText != null)
+        {
+            currencyText.gameObject.SetActive(false);
         }
     }
 }
