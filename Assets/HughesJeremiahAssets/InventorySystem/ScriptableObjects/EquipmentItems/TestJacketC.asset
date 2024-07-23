@@ -20,6 +20,7 @@ MonoBehaviour:
   itemType: 2
   rarity: 0
   itemDescription: This is a Mythical Piece of Armor
+  weight: 0.15
   count: 1
   armorModifier: 0
   damageModifier: 0

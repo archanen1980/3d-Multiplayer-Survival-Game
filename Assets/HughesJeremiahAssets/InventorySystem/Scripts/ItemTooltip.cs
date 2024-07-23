@@ -10,6 +10,7 @@ public class ItemTooltip : MonoBehaviour
     public TextMeshProUGUI itemDescriptionText;
     public TextMeshProUGUI itemStatsText;
     public TextMeshProUGUI itemDurabilityText; // Text to display durability
+    public TextMeshProUGUI itemWeightText; // Text to display weight
     public Vector3 offset = new Vector3(10f, 0f, 0f); // Offset for the tooltip position
 
     private void Awake()
@@ -47,6 +48,9 @@ public class ItemTooltip : MonoBehaviour
         {
             itemDurabilityText.gameObject.SetActive(false);
         }
+
+        itemWeightText.text = $"Weight: {item.weight}"; // Display the weight
+        itemWeightText.gameObject.SetActive(true);
     }
 
     public void HideTooltip()

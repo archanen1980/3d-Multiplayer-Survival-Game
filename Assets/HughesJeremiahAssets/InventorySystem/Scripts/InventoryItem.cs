@@ -28,6 +28,7 @@ public class InventoryItem : ScriptableObject
     public ItemRarity rarity = ItemRarity.Common; // Rarity of the item
     [TextArea(5, 10)]
     public string itemDescription = "Item Description"; // Description of the item
+    public float weight = 0f; // Weight of the item
 
     // Property to hold the current count of items
     [HideInInspector]
