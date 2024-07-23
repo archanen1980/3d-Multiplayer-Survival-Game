@@ -50,7 +50,7 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 associatedContainer.SetSlots(additionalSlots);
             }
 
-            EquipmentUI.Instance.UpdateTotalWeight(); // Update total weight when an item is equipped
+            EquipmentUI.Instance.UpdateWeight(); // Update weight when an item is equipped
         }
         else
         {
@@ -145,7 +145,7 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             durabilityBarBackground.SetActive(false); // Hide durability bar background
         }
 
-        EquipmentUI.Instance.UpdateTotalWeight(); // Update total weight when an item is unequipped
+        EquipmentUI.Instance.UpdateWeight(); // Update weight when an item is unequipped
     }
 
     private int MoveItemToAvailableContainers(InventoryItem item, int count)

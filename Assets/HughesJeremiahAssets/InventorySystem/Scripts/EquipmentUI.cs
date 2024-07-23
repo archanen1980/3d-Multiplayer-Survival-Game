@@ -7,7 +7,9 @@ public class EquipmentUI : MonoBehaviour
 
     public GameObject equipmentUI; // The Equipment UI
     public EquipmentSlot[] equipmentSlots; // Array to hold references to equipment slots
-    public TextMeshProUGUI totalWeightText; // Text field to display total weight
+    public TextMeshProUGUI weightText; // Text field to display current and max weight
+
+    public float maxWeight = 100f; // Maximum weight capacity
 
     private void Awake()
     {
@@ -25,6 +27,7 @@ public class EquipmentUI : MonoBehaviour
     {
         equipmentUI.SetActive(false); // Start with the equipment UI closed
         InitializeSlots(); // Initialize all slots
+        UpdateWeight(); // Initialize weight calculation
     }
 
     private void InitializeSlots()
@@ -33,7 +36,7 @@ public class EquipmentUI : MonoBehaviour
         {
             slot.ClearSlot(); // Ensure each slot is cleared initially
         }
-        UpdateTotalWeight(); // Initialize total weight calculation
+        UpdateWeight(); // Initialize weight calculation
     }
 
     public void ToggleEquipmentUI(bool isActive)
@@ -47,19 +50,19 @@ public class EquipmentUI : MonoBehaviour
 
     public void UpdateUI()
     {
-        UpdateTotalWeight(); // Update total weight whenever the UI is updated
+        UpdateWeight(); // Update weight whenever the UI is updated
     }
 
-    public void UpdateTotalWeight()
+    public void UpdateWeight()
     {
-        float totalWeight = 0f;
+        float currentWeight = 0f;
         foreach (var slot in equipmentSlots)
         {
             if (slot.GetEquippedItem() != null)
             {
-                totalWeight += slot.GetEquippedItem().weight;
+                currentWeight += slot.GetEquippedItem().weight;
             }
         }
-        totalWeightText.text = $"Weight: {totalWeight:F2}"; // Display the total weight with 2 decimal places
+        weightText.text = $"Weight: {currentWeight:F2} / {maxWeight:F2}"; // Display the current and max weight with 2 decimal places
     }
 }

@@ -20,7 +20,7 @@ MonoBehaviour:
   itemType: 8
   rarity: 0
   itemDescription: Item Description
-  weight: 0
+  weight: 0.15
   count: 1
   armorModifier: 0
   damageModifier: 0
