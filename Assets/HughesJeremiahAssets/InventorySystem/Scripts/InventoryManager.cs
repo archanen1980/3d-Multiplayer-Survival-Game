@@ -131,11 +131,18 @@ public class InventoryManager : MonoBehaviour
 
     private void OnCheatCurrency(InputAction.CallbackContext context)
     {
-        AddCurrency(1000); // Add 1000 currency for cheating
-        Debug.Log("Cheat activated: Added 1000 currency.");
-        if (equipmentUI.gameObject.activeSelf) // Only update UI if equipment UI is active
+        if (useCurrency)
         {
-            equipmentUI.UpdateCurrencyUI(currentCurrency); // Update the Equipment UI currency display
+            AddCurrency(1000); // Add 1000 currency for cheating
+            Debug.Log("Cheat activated: Added 1000 currency.");
+            if (equipmentUI.gameObject.activeSelf) // Only update UI if equipment UI is active
+            {
+                equipmentUI.UpdateCurrencyUI(currentCurrency); // Update the Equipment UI currency display
+            }
+        }
+        else
+        {
+            Debug.Log("Cheat currency is disabled.");
         }
     }
 }
