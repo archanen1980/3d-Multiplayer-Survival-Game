@@ -64,5 +64,13 @@ public class EquipmentUI : MonoBehaviour
             }
         }
         weightText.text = $"Weight: {currentWeight:F2} / {maxWeight:F2}"; // Display the current and max weight with 2 decimal places
+        if (currentWeight > maxWeight)
+        {
+            weightText.color = Color.red; // Turn the text red if current weight exceeds max weight
+        }
+        else
+        {
+            weightText.color = Color.white; // Reset to default color if within max weight
+        }
     }
 }
