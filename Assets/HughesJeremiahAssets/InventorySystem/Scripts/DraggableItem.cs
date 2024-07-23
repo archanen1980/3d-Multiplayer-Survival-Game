@@ -47,8 +47,6 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
-        rectTransform.SetParent(originalParent);
-        rectTransform.localPosition = Vector3.zero;
 
         EquipmentSlot newEquipmentSlot = null;
         InventorySlot newInventorySlot = null;
@@ -58,6 +56,21 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             newEquipmentSlot = eventData.pointerEnter.GetComponentInParent<EquipmentSlot>();
             newInventorySlot = eventData.pointerEnter.GetComponentInParent<InventorySlot>();
         }
+
+        // Check if dropped on the original slot
+        if ((newInventorySlot != null && newInventorySlot == originalInventorySlot) ||
+            (newEquipmentSlot != null && newEquipmentSlot == originalEquipmentSlot))
+        {
+            // Cancel the drag and return to the original slot
+            rectTransform.SetParent(originalParent);
+            rectTransform.localPosition = Vector3.zero;
+            DraggedItem.Instance.ClearDraggedItem();
+            DraggedItem.Instance.gameObject.SetActive(false);
+            return;
+        }
+
+        rectTransform.SetParent(originalParent);
+        rectTransform.localPosition = Vector3.zero;
 
         if (newEquipmentSlot != null && DraggedItem.Instance.GetItem() is EquipmentItem)
         {
@@ -77,7 +90,6 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             InventoryItem item = DraggedItem.Instance.GetItem();
             if (originalEquipmentSlot != null && originalEquipmentSlot.associatedContainer == newInventorySlot.GetComponentInParent<ItemContainer>())
             {
-                // Check if the container has a minimum slot count, less items than minSlotCount, and if there is space
                 if (originalEquipmentSlot.associatedContainer.minSlotCount > 0 &&
                     originalEquipmentSlot.associatedContainer.GetItemCount() < originalEquipmentSlot.associatedContainer.minSlotCount &&
                     originalEquipmentSlot.CanFitInContainer(item, 1))
