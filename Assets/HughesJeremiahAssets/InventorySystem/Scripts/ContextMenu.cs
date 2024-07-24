@@ -10,8 +10,8 @@ public class ContextMenu : MonoBehaviour
     private GameObject contextMenu;
     [SerializeField] private Button deleteButton;
     [SerializeField] private Button splitStackButton;
-    [SerializeField] private Button equipButton; // Add Equip button
-    [SerializeField] private Button unequipButton; // Add Unequip button
+    [SerializeField] private Button equipButton;
+    [SerializeField] private Button unequipButton;
     private InventorySlot currentInventorySlot;
     private EquipmentSlot currentEquipmentSlot;
 
@@ -31,11 +31,6 @@ public class ContextMenu : MonoBehaviour
         {
             Instance = this;
             contextMenu = this.gameObject;
-            if (contextMenu == null)
-            {
-                Debug.LogError("ContextMenu object not found. Ensure it is a child of this GameObject.");
-                return;
-            }
 
             if (deleteButton == null || splitStackButton == null || equipButton == null || unequipButton == null ||
                 splitStackPanel == null || splitSlider == null || splitAmountText == null || confirmSplitButton == null)
@@ -49,7 +44,7 @@ public class ContextMenu : MonoBehaviour
             splitStackPanelRectTransform = splitStackPanel.GetComponent<RectTransform>();
 
             contextMenu.SetActive(false);
-            splitStackPanel.SetActive(false); // Hide split stack panel initially
+            splitStackPanel.SetActive(false);
         }
         else
         {
@@ -118,7 +113,7 @@ public class ContextMenu : MonoBehaviour
     public void HideContextMenu()
     {
         contextMenu.SetActive(false);
-        splitStackPanel.SetActive(false); // Hide split stack panel when context menu is hidden
+        splitStackPanel.SetActive(false);
     }
 
     private void ShowSplitStackPanel()
@@ -129,19 +124,17 @@ public class ContextMenu : MonoBehaviour
             return;
         }
 
-        // Position the split stack panel above the context menu
         Vector3 newPosition = contextMenuRectTransform.position;
-        newPosition.y += contextMenuRectTransform.rect.height; // Adjust the Y offset
+        newPosition.y += contextMenuRectTransform.rect.height;
 
         splitStackPanel.SetActive(true);
         splitStackPanel.transform.position = newPosition;
 
-        // Initialize the slider
         splitSlider.minValue = 1;
-        splitSlider.maxValue = currentInventorySlot.GetItemCount() - 1; // Cannot split all items
-        splitSlider.value = 1; // Default to splitting one item
+        splitSlider.maxValue = currentInventorySlot.GetItemCount() - 1;
+        splitSlider.value = 1;
 
-        UpdateSplitAmountText(splitSlider.value); // Initialize the split amount text
+        UpdateSplitAmountText(splitSlider.value);
     }
 
     private void UpdateSplitAmountText(float value)
@@ -187,13 +180,10 @@ public class ContextMenu : MonoBehaviour
             return;
         }
 
-        // Calculate the remaining amount in the original stack after the split
         int remainingAmount = itemCount - splitAmount;
 
-        // Update the original slot with the remaining amount
         currentInventorySlot.AddItem(item, remainingAmount);
 
-        // Create a new stack with the split amount
         InventoryItem newStack = Instantiate(item);
         newStack.count = splitAmount;
 
@@ -239,8 +229,15 @@ public class ContextMenu : MonoBehaviour
             EquipmentSlot suitableSlot = FindSuitableEquipmentSlot(equipmentItem);
             if (suitableSlot != null)
             {
+                EquipmentItem currentEquippedItem = suitableSlot.GetEquippedItem();
+
                 suitableSlot.EquipItem(equipmentItem);
                 currentInventorySlot.ClearSlot();
+
+                if (currentEquippedItem != null)
+                {
+                    currentInventorySlot.AddItem(currentEquippedItem, 1);
+                }
             }
             else
             {
@@ -283,7 +280,7 @@ public class ContextMenu : MonoBehaviour
     {
         foreach (var slot in EquipmentUI.Instance.equipmentSlots)
         {
-            if (slot.slotType == item.itemType && slot.GetEquippedItem() == null)
+            if (slot.slotType == item.itemType)
             {
                 return slot;
             }
