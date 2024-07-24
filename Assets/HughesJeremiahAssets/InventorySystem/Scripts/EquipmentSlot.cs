@@ -16,7 +16,6 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     private void Awake()
     {
-        // Dynamically find the icon GameObject in the children
         icon = transform.GetChild(0).GetComponent<Image>(); // Adjust the index as needed
         if (icon == null)
         {

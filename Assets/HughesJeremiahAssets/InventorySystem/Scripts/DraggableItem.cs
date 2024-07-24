@@ -48,99 +48,141 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        EquipmentSlot newEquipmentSlot = null;
         InventorySlot newInventorySlot = null;
+        EquipmentSlot newEquipmentSlot = null;
 
         if (eventData.pointerEnter != null)
         {
-            newEquipmentSlot = eventData.pointerEnter.GetComponentInParent<EquipmentSlot>();
             newInventorySlot = eventData.pointerEnter.GetComponentInParent<InventorySlot>();
+            newEquipmentSlot = eventData.pointerEnter.GetComponentInParent<EquipmentSlot>();
         }
 
-        // Check if dropped on the original slot
-        if ((newInventorySlot != null && newInventorySlot == originalInventorySlot) ||
-            (newEquipmentSlot != null && newEquipmentSlot == originalEquipmentSlot))
+        if (newInventorySlot != null)
         {
-            // Cancel the drag and return to the original slot
-            rectTransform.SetParent(originalParent);
-            rectTransform.localPosition = Vector3.zero;
-            DraggedItem.Instance.ClearDraggedItem();
-            DraggedItem.Instance.gameObject.SetActive(false);
-            return;
+            HandleInventorySlotInteraction(newInventorySlot);
         }
-
-        rectTransform.SetParent(originalParent);
-        rectTransform.localPosition = Vector3.zero;
-
-        if (newEquipmentSlot != null && DraggedItem.Instance.GetItem() is EquipmentItem)
+        else if (newEquipmentSlot != null)
         {
-            EquipmentItem item = DraggedItem.Instance.GetItem() as EquipmentItem;
-            if (newEquipmentSlot.CanEquipItem(item))
-            {
-                newEquipmentSlot.EquipItem(item);
-                ClearOriginalSlot();
-            }
-            else
-            {
-                Debug.LogWarning("Cannot equip item to this slot.");
-            }
-        }
-        else if (newInventorySlot != null && DraggedItem.Instance.GetItem() is InventoryItem)
-        {
-            InventoryItem item = DraggedItem.Instance.GetItem();
-            if (originalEquipmentSlot != null && originalEquipmentSlot.associatedContainer == newInventorySlot.GetComponentInParent<ItemContainer>())
-            {
-                if (originalEquipmentSlot.associatedContainer.minSlotCount > 0 &&
-                    originalEquipmentSlot.associatedContainer.GetItemCount() < originalEquipmentSlot.associatedContainer.minSlotCount &&
-                    originalEquipmentSlot.CanFitInContainer(item, 1))
-                {
-                    newInventorySlot.AddItem(item, 1);
-                    originalEquipmentSlot.ClearSlot();
-                }
-                else
-                {
-                    Debug.LogWarning("Cannot unequip item to the container it creates slots for.");
-                }
-            }
-            else
-            {
-                if (originalInventorySlot != null)
-                {
-                    if (newInventorySlot.GetItem() != null && newInventorySlot.GetItem().itemID == item.itemID && item.isStackable)
-                    {
-                        int newCount = newInventorySlot.GetItemCount() + DraggedItem.Instance.GetCount();
-                        newInventorySlot.AddItem(item, newCount);
-                    }
-                    else
-                    {
-                        newInventorySlot.AddItem(item, originalInventorySlot.GetItemCount());
-                    }
-                    originalInventorySlot.ClearSlot();
-                }
-                else if (originalEquipmentSlot != null)
-                {
-                    if (newInventorySlot.GetItem() != null && newInventorySlot.GetItem().itemID == item.itemID && item.isStackable)
-                    {
-                        int newCount = newInventorySlot.GetItemCount() + DraggedItem.Instance.GetCount();
-                        newInventorySlot.AddItem(item, newCount);
-                    }
-                    else
-                    {
-                        newInventorySlot.AddItem(item, 1);
-                    }
-                    originalEquipmentSlot.ClearSlot();
-                }
-            }
-        }
-        else if (InventoryManager.instance.useDragAndDropToDelete && !EventSystem.current.IsPointerOverGameObject())
-        {
-            // Handle deleting items
-            ClearOriginalSlot();
+            HandleEquipmentSlotInteraction(newEquipmentSlot);
         }
 
         DraggedItem.Instance.ClearDraggedItem();
-        InventoryManager.instance.RefreshUI();
+        rectTransform.SetParent(originalParent); // Reset parent to original
+        rectTransform.localPosition = Vector3.zero; // Reset position
         DraggedItem.Instance.gameObject.SetActive(false);
+        InventoryManager.instance.RefreshUI();
+    }
+
+    private void HandleInventorySlotInteraction(InventorySlot newSlot)
+    {
+        if (newSlot == null)
+        {
+            Debug.LogError("newSlot is null in HandleInventorySlotInteraction.");
+            return;
+        }
+
+        InventoryItem newItem = DraggedItem.Instance.GetItem();
+        if (newItem == null)
+        {
+            Debug.LogError("Dragged item is null or not an InventoryItem.");
+            return;
+        }
+
+        InventoryItem currentItem = newSlot.GetItem();
+
+        if (currentItem != null && currentItem.itemID == newItem.itemID)
+        {
+            if (newItem.isStackable)
+            {
+                // Stack items
+                int combinedCount = newSlot.GetItemCount() + DraggedItem.Instance.GetCount();
+                int maxStackSize = newItem.maxStackSize;
+
+                if (combinedCount <= maxStackSize)
+                {
+                    newSlot.AddItem(newItem, combinedCount);
+                    ClearOriginalSlot(); // Call without parameters
+                }
+                else
+                {
+                    newSlot.AddItem(newItem, maxStackSize);
+                    if (originalInventorySlot != null)
+                    {
+                        originalInventorySlot.AddItem(newItem, combinedCount - maxStackSize);
+                    }
+                    else
+                    {
+                        Debug.LogError("originalInventorySlot is null while stacking items.");
+                    }
+                }
+            }
+            else
+            {
+                // Swap items
+                SwapItems(newSlot, originalInventorySlot);
+            }
+        }
+        else
+        {
+            // Place in empty slot or swap with a different item
+            if (newSlot.GetItem() == null)
+            {
+                newSlot.AddItem(newItem, DraggedItem.Instance.GetCount());
+                ClearOriginalSlot(); // Call without parameters
+            }
+            else
+            {
+                SwapItems(newSlot, originalInventorySlot);
+            }
+        }
+    }
+
+    private void HandleEquipmentSlotInteraction(EquipmentSlot newSlot)
+    {
+        if (newSlot == null)
+        {
+            Debug.LogError("newSlot is null in HandleEquipmentSlotInteraction.");
+            return;
+        }
+
+        EquipmentItem newItem = DraggedItem.Instance.GetItem() as EquipmentItem;
+        if (newItem == null)
+        {
+            Debug.LogError("Dragged item is null or not an EquipmentItem.");
+            return;
+        }
+
+        // Check if the new item can be equipped in the slot
+        if (newItem.itemType != newSlot.slotType)
+        {
+            Debug.LogWarning($"Item {newItem.itemName} of type {newItem.itemType} cannot be equipped in slot of type {newSlot.slotType}.");
+            return;
+        }
+
+        EquipmentItem currentItem = newSlot.GetEquippedItem();
+
+        if (currentItem != null)
+        {
+            // Prevent swapping if the item types are not compatible
+            InventoryItem inventoryItem = DraggedItem.Instance.GetItem();
+            if (inventoryItem is EquipmentItem inventoryEquipmentItem)
+            {
+                if (inventoryEquipmentItem.itemType != newSlot.slotType)
+                {
+                    Debug.LogWarning($"Cannot swap item {currentItem.itemName} with {newItem.itemName}. Incompatible item types.");
+                    return;
+                }
+            }
+
+            // Swap items
+            SwapItems(newSlot, originalEquipmentSlot);
+        }
+        else
+        {
+            // Equip in empty slot
+            newSlot.EquipItem(newItem);
+            ClearOriginalSlot();
+        }
     }
 
     private void ClearOriginalSlot()
@@ -153,5 +195,40 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             originalEquipmentSlot.ClearSlot();
         }
+    }
+
+    private void SwapItems(InventorySlot slot1, InventorySlot slot2)
+    {
+        if (slot1 == null || slot2 == null)
+        {
+            Debug.LogError("Attempted to swap items with a null slot.");
+            return;
+        }
+
+        InventoryItem item1 = slot1.GetItem();
+        int count1 = slot1.GetItemCount();
+
+        InventoryItem item2 = slot2.GetItem();
+        int count2 = slot2.GetItemCount();
+
+        slot1.ClearSlot();
+        if (item2 != null) slot1.AddItem(item2, count2);
+
+        slot2.ClearSlot();
+        if (item1 != null) slot2.AddItem(item1, count1);
+    }
+
+    private void SwapItems(EquipmentSlot slot1, EquipmentSlot slot2)
+    {
+        if (slot1 == null || slot2 == null)
+        {
+            Debug.LogError("Attempted to swap items with a null slot.");
+            return;
+        }
+
+        EquipmentItem tempItem = slot1.GetEquippedItem();
+
+        slot1.EquipItem(slot2.GetEquippedItem());
+        slot2.EquipItem(tempItem);
     }
 }
