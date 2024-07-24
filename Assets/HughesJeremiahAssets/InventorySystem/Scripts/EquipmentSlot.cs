@@ -167,11 +167,6 @@ public class EquipmentSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         return remainingCount; // Return remaining items if not all could be moved
     }
 
-    public bool CanEquipItem(EquipmentItem item)
-    {
-        return item.itemType == slotType;
-    }
-
     private int MoveItemToMinSlotsWithinContainer(ItemContainer container, InventoryItem item, int count)
     {
         int remainingCount = count;

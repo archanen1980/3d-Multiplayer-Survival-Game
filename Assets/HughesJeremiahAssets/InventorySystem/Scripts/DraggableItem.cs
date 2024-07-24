@@ -201,7 +201,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (slot1 == null || slot2 == null)
         {
-            Debug.LogError("Attempted to swap items with a null slot.");
+            //Debug.LogError("Attempted to swap items with a null slot.");
             return;
         }
 
@@ -222,7 +222,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (slot1 == null || slot2 == null)
         {
-            Debug.LogError("Attempted to swap items with a null slot.");
+            //Debug.LogError("Attempted to swap items with a null slot.");
             return;
         }
 
