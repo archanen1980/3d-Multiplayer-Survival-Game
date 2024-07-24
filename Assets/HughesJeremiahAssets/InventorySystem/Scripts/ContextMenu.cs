@@ -10,6 +10,8 @@ public class ContextMenu : MonoBehaviour
     private GameObject contextMenu;
     [SerializeField] private Button deleteButton;
     [SerializeField] private Button splitStackButton;
+    [SerializeField] private Button equipButton; // Add Equip button
+    [SerializeField] private Button unequipButton; // Add Unequip button
     private InventorySlot currentInventorySlot;
     private EquipmentSlot currentEquipmentSlot;
 
@@ -35,7 +37,8 @@ public class ContextMenu : MonoBehaviour
                 return;
             }
 
-            if (deleteButton == null || splitStackButton == null || splitStackPanel == null || splitSlider == null || splitAmountText == null || confirmSplitButton == null)
+            if (deleteButton == null || splitStackButton == null || equipButton == null || unequipButton == null ||
+                splitStackPanel == null || splitSlider == null || splitAmountText == null || confirmSplitButton == null)
             {
                 Debug.LogError("Buttons or split stack components are not assigned. Ensure they are assigned in the inspector.");
                 return;
@@ -83,7 +86,7 @@ public class ContextMenu : MonoBehaviour
 
     private void ShowContextMenuCommon(InventoryItem item, int itemCount)
     {
-        if (contextMenu == null || deleteButton == null || splitStackButton == null)
+        if (contextMenu == null || deleteButton == null || splitStackButton == null || equipButton == null || unequipButton == null)
         {
             Debug.LogError("ContextMenu or buttons are not assigned.");
             return;
@@ -92,14 +95,7 @@ public class ContextMenu : MonoBehaviour
         contextMenu.SetActive(true);
         contextMenu.transform.position = Input.mousePosition;
 
-        if (item != null && item.isStackable && itemCount > 1)
-        {
-            splitStackButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            splitStackButton.gameObject.SetActive(false);
-        }
+        splitStackButton.gameObject.SetActive(item != null && item.isStackable && itemCount > 1);
 
         deleteButton.onClick.RemoveAllListeners();
         deleteButton.onClick.AddListener(RemoveItem);
@@ -109,6 +105,14 @@ public class ContextMenu : MonoBehaviour
 
         splitSlider.onValueChanged.AddListener(UpdateSplitAmountText);
         confirmSplitButton.onClick.AddListener(ConfirmSplit);
+
+        equipButton.gameObject.SetActive(currentInventorySlot != null && item is EquipmentItem);
+        equipButton.onClick.RemoveAllListeners();
+        equipButton.onClick.AddListener(EquipItem);
+
+        unequipButton.gameObject.SetActive(currentEquipmentSlot != null && currentEquipmentSlot.GetEquippedItem() != null);
+        unequipButton.onClick.RemoveAllListeners();
+        unequipButton.onClick.AddListener(UnequipItem);
     }
 
     public void HideContextMenu()
@@ -219,6 +223,87 @@ public class ContextMenu : MonoBehaviour
 
         HideContextMenu();
         InventoryManager.instance.RefreshUI();
+    }
+
+    private void EquipItem()
+    {
+        if (currentInventorySlot == null)
+        {
+            Debug.LogError("No inventory slot selected for equipping.");
+            return;
+        }
+
+        InventoryItem item = currentInventorySlot.GetItem();
+        if (item is EquipmentItem equipmentItem)
+        {
+            EquipmentSlot suitableSlot = FindSuitableEquipmentSlot(equipmentItem);
+            if (suitableSlot != null)
+            {
+                suitableSlot.EquipItem(equipmentItem);
+                currentInventorySlot.ClearSlot();
+            }
+            else
+            {
+                Debug.LogWarning("No suitable equipment slot found.");
+            }
+        }
+
+        HideContextMenu();
+        InventoryManager.instance.RefreshUI();
+    }
+
+    private void UnequipItem()
+    {
+        if (currentEquipmentSlot == null)
+        {
+            Debug.LogError("No equipment slot selected for unequipping.");
+            return;
+        }
+
+        EquipmentItem item = currentEquipmentSlot.GetEquippedItem();
+        if (item != null)
+        {
+            InventorySlot emptySlot = FindEmptyInventorySlot();
+            if (emptySlot != null)
+            {
+                emptySlot.AddItem(item, 1);
+                currentEquipmentSlot.ClearSlot();
+            }
+            else
+            {
+                Debug.LogWarning("No empty inventory slot available.");
+            }
+        }
+
+        HideContextMenu();
+        InventoryManager.instance.RefreshUI();
+    }
+
+    private EquipmentSlot FindSuitableEquipmentSlot(EquipmentItem item)
+    {
+        foreach (var slot in EquipmentUI.Instance.equipmentSlots)
+        {
+            if (slot.slotType == item.itemType && slot.GetEquippedItem() == null)
+            {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    private InventorySlot FindEmptyInventorySlot()
+    {
+        foreach (var container in InventoryManager.instance.containers)
+        {
+            foreach (var slot in container.slots)
+            {
+                if (slot.GetItem() == null)
+                {
+                    return slot;
+                }
+            }
+        }
+        return null;
     }
 
     private bool IsPointerOverUIObject()
